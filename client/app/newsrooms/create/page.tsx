@@ -27,7 +27,7 @@ const imgSchema = z.object({
   webkitRelativePath: z.string(),
 });
 
-const newsformSchema = z
+const news = z
   .object({
     newsTitle: z.string(),
     newsDate: z.date(),
@@ -39,10 +39,17 @@ const newsformSchema = z
   })
   .partial();
 
+const newsSchema = news.required({
+  newsTitle: true,
+  newsDate: true,
+  newsContentEn: true,
+  newsContentHk: true,
+});
+
 const CreateNews = () => {
   const [title, setTitle] = useState("");
-  const form = useForm<z.infer<typeof newsformSchema>>({
-    resolver: zodResolver(newsformSchema),
+  const form = useForm<z.infer<typeof newsSchema>>({
+    resolver: zodResolver(newsSchema),
     defaultValues: {
       newsTitle: "",
       newsDate: new Date(),
