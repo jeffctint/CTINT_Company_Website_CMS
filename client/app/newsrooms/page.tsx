@@ -2,10 +2,12 @@
 
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@app/components/ui/button";
 import NewsCard from "../components/NewsCard";
 import { NewsCardProps } from "@/types";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const fakeNews: NewsCardProps[] = [
   {
@@ -94,9 +96,53 @@ const fakeNews: NewsCardProps[] = [
   },
 ];
 
-const Newsrooms = () => {
-  const { status, data } = useSession();
+// const getData = async () => {
+//   const res = fetch("https://jsonplaceholder.typicode.com/posts", {
+//     method: "GET", // *GET, POST, PUT, DELETE, etc.
+//     mode: "cors", // no-cors, *cors, same-origin
+//     cache: "no-store", // *default, no-cache, reload, force-cache, only-if-cached
+//     credentials: "same-origin", // include, *same-origin, omit
+//     headers: {
+//       "Content-Type": "application/json",
+//       // 'Content-Type': 'application/x-www-form-urlencoded',
+//     },
+//   });
+//   const data = (await res).json();
+//   // setNews(await data);
+// };
+
+const Newsrooms = async () => {
+  // const { status, data } = useSession();
   const router = useRouter();
+  // const [news, setNews] = useState([]);
+
+  // const news = await getData();
+
+  // console.log("news", news);
+
+  // const { data, isLoading } = useQuery({
+  //   // networkMode: "offlineFirst",
+  //   queryKey: ["news"],
+  //   // cacheTime: 0,
+  //   // staleTime: 99999999999,
+
+  //   queryFn: async () => {
+  //     await axios("http://localhost:10443/v1/interactions", {
+  //       method: "POST", // *GET, POST, PUT, DELETE, etc.
+
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         // 'Content-Type': 'application/x-www-form-urlencoded',
+  //       },
+  //     });
+  //   },
+  // });
+
+  // if (!data || isLoading) {
+  //   return <div>is loading</div>;
+  // }
+
+  // console.log("fetch data", data);
 
   return (
     <div className="flex flex-col text-white text-2xl overflow-y-auto">
@@ -110,17 +156,39 @@ const Newsrooms = () => {
         </Button>
       </div>
       <div className="p-4 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        {fakeNews.map((news) => (
-          <NewsCard
-            imagePkey={news.imagePkey}
-            newsTitle={news.newsTitle}
-            newsDate={news.newsDate}
-            code={news.code}
-          />
-        ))}
+        {/* {fakeNews.map((news, i) => (
+          <NewsCard />
+        ))} */}
+        <NewsCard />
       </div>
     </div>
   );
 };
 
 export default Newsrooms;
+
+// export async function getServerSideProps() {
+//   const res = await fetch("http://localhost:10443/v1/interactions", {
+//     method: "POST", // *GET, POST, PUT, DELETE, etc.
+//     mode: "cors", // no-cors, *cors, same-origin
+//     // *default, no-cache, reload, force-cache, only-if-cached
+//     credentials: "same-origin", // include, *same-origin, omit
+//     headers: {
+//       "Content-Type": "application/json",
+//       // 'Content-Type': 'application/x-www-form-urlencoded',
+//     },
+//   });
+//   const data = await res.json();
+
+//   if (!data) {
+//     return {
+//       notFound: true,
+//     };
+//   }
+
+//   return {
+//     props: {
+//       news: data,
+//     }, // will be passed to the page component as props
+//   };
+// }

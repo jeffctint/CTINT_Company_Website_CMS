@@ -8,6 +8,7 @@ import { Inter } from "next/font/google";
 import { Toaster } from "@app/components/ui/toaster";
 
 import "./globals.css";
+import QueryProvider from "./contexts/QueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,26 +27,28 @@ export default function RootLayout({
   const isSigninPage = pathname.includes("/signin");
 
   return (
-    <html lang="en">
-      <body
-        className={`${inter.className} flex flex-row font-sans h-screen overflow-hidden`}
-      >
-        <AuthProvider>
-          {isSigninPage ? (
-            <>{children}</>
-          ) : (
-            <>
-              <Sidebar />
-              <div className="bg-[#181f25] flex flex-col w-full">
-                <Topbar />
+    <QueryProvider>
+      <html lang="en">
+        <body
+          className={`${inter.className} flex flex-row font-sans h-screen overflow-hidden`}
+        >
+          <AuthProvider>
+            {isSigninPage ? (
+              <>{children}</>
+            ) : (
+              <>
+                <Sidebar />
+                <div className="bg-[#181f25] flex flex-col w-full">
+                  <Topbar />
 
-                {children}
-              </div>
-            </>
-          )}
-          <Toaster />
-        </AuthProvider>
-      </body>
-    </html>
+                  {children}
+                </div>
+              </>
+            )}
+            <Toaster />
+          </AuthProvider>
+        </body>
+      </html>
+    </QueryProvider>
   );
 }

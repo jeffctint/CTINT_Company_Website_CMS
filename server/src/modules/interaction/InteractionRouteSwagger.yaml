@@ -1,0 +1,178 @@
+name: Interaction
+description: Interaction Management
+tags: Interaction
+paths:
+  /interactions:
+    post:
+      summary: Get list of interaction
+      description: get all interaction by multiple optional search parameters
+      tags:
+        - Interaction
+      parameters:
+        - $ref: '#/components/parameters/GcUserId'
+        - $ref: '#/components/parameters/GcUserName'
+        - $ref: '#/components/parameters/GcUserEmail'
+      requestBody:
+        description: Search parameters body
+        required: true
+        content:
+          application/json:
+            $$ref: '#/components/schemas/InteractionSearch'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Interaction'
+                  message:
+                    type: string
+                  isSuccess:
+                    type: boolean
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /interactions/detail/{id}:
+    get:
+      summary: Get interaction detail by id
+      description: get interaction detail by id
+      tags:
+        - Interaction
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/GcUserId'
+        - $ref: '#/components/parameters/GcUserName'
+        - $ref: '#/components/parameters/GcUserEmail'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Interaction'
+                  message:
+                    type: string
+                  isSuccess:
+                    type: boolean
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /interactions/attachments/download/{id}:
+    get:
+      summary: Download interaction attachment by id
+      description: Download interaction attachment by id
+      tags:
+        - Interaction
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/GcUserId'
+        - $ref: '#/components/parameters/GcUserName'
+        - $ref: '#/components/parameters/GcUserEmail'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  isSuccess:
+                    type: boolean
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /interactions/contacts:
+    get:
+      summary: Get list of contact
+      description: get contact by search input
+      tags:
+        - Interaction
+      parameters:
+        - in: query
+          name: searchInput
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/GcUserId'
+        - $ref: '#/components/parameters/GcUserName'
+        - $ref: '#/components/parameters/GcUserEmail'
+      examples:
+        searchInput: 'guest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Interaction'
+                  message:
+                    type: string
+                  isSuccess:
+                    type: boolean
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /interactions/queues:
+    get:
+      summary: Get list of queue
+      description: get queue by search input
+      tags:
+        - Interaction
+      parameters:
+        - in: query
+          name: searchInput
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/GcUserId'
+        - $ref: '#/components/parameters/GcUserName'
+        - $ref: '#/components/parameters/GcUserEmail'
+      examples:
+        searchInput: 'ss'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Interaction'
+                  message:
+                    type: string
+                  isSuccess:
+                    type: boolean
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'

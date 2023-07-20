@@ -1,0 +1,37 @@
+name: Healthcheck
+description: Healthcheck endpoints
+tags: Healthcheck
+paths:
+  /healthcheck:
+    get:
+      summary: Get server status
+      description: Get server status
+      tags:
+        - Healthcheck
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                 type: object
+                 properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      upTime:
+                        type: string
+                      responseTime:
+                        type: string
+                      timestamp:
+                        type: string
+                  message:
+                    type: string
+                  isSuccess:
+                    type: boolean
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: '#/components/responses/Unauthorized'

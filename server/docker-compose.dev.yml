@@ -1,0 +1,44 @@
+# This serves as an override for the default docker-compose.yml file.
+# This file contains configuration that is specific to DEV environment.
+
+version: "3.8"
+
+services:
+  client:
+    # This is the user that will be used to run the container; always use a non-root user
+    user: ctint
+    # Specify the tag in the format of <image-name>:<tag>
+    image: hkdl-webapp-genesys-engage-client:development
+
+    build:
+      # This is the build target which is defined in the Dockerfile (e.g. FROM ** AS client-development)
+      target: client-development
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    env_file:
+      - ./client/.env.development
+    # Development ONLY: Bind mount the client/src directory to the container's /usr/src/app/src directory for hot reloading.
+    volumes:
+      - ./client/src:/usr/src/app/src
+      - /usr/src/app/node_modules
+    command: npm run dev
+  server:
+    # Specify the tag in the format of <image-name>:<tag>
+    image: hkdl-webapp-genesys-engage-server:development
+    build:
+      target: server-development
+    ports:
+      - "10443:10443"
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./server/.env.development.local
+    # Development ONLY: Bind mount the server/src directory to the container's /usr/src/app/src directory for hot reloading.
+    volumes:
+      - ./server/src:/usr/src/app/src
+      - /usr/src/app/node_modules
+    restart: "unless-stopped"
+    command: npm run dev

@@ -1,0 +1,25 @@
+# The base compose file
+
+version: "3.8"
+
+# This is the name of the network that will be created
+name: hkdl-webapp-genesys-engage
+services:
+  # The name of the service, defaults to be a network alias for the container
+  client:
+    # This is the name of the container that will be created
+    container_name: frontend
+    build:
+      # This is the path containing the Dockerfile
+      context: ./client
+    depends_on:
+      - server
+  # The name of the service, defaults to be a network alias for the container
+  server:
+    # This is the name of the container that will be created
+    container_name: api-server
+    # This is the user that will be used to run the container; always use a non-root user
+    user: ctint
+    build:
+      # This is the path containing the Dockerfile
+      context: ./server

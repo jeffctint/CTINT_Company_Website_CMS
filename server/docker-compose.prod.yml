@@ -1,0 +1,33 @@
+# This serves as an override for the default docker-compose.yml file.
+# This file contains configuration that is specific to PROD environment.
+
+version: "3.8"
+
+services:
+  client:
+    image: hkdl-webapp-genesys-engage-client:production
+    build:
+      # This is the build target which is defined in the Dockerfile (e.g. FROM ** AS client-production)
+      target: client-production
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./client/.env.production
+    restart: "always"
+  server:
+    image: hkdl-webapp-genesys-engage-server:production
+    build:
+      target: server-production
+    ports:
+      - "10443:10443"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./server/.env.production.local
+    restart: "always"
+    volumes:
+      - server-data:/usr/src/app/data
+volumes:
+  server-data:
