@@ -1,0 +1,73 @@
+name: Newsrooms
+description: Newsrooms Management
+tags: Newsrooms
+paths:
+  /newsrooms:
+    post:
+      summary: Get list of newsrooms
+      description: get all newsrooms
+      tags:
+        - Newsrooms
+      # parameters:
+      #   - $ref: '#/components/parameters/GcUserId'
+      #   - $ref: '#/components/parameters/GcUserName'
+      #   - $ref: '#/components/parameters/GcUserEmail'
+      requestBody:
+        description: Search parameters body
+        required: false
+        # content:
+        #   application/json:
+        #     $$ref: '#/components/schemas/InteractionSearch'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Newsrooms'
+                  message:
+                    type: string
+                  isSuccess:
+                    type: boolean
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /newsrooms/{pkey}:
+    get:
+      summary: Get newsrooms detail by pkey
+      description: get newsrooms detail by pkey
+      tags:
+        - Newsrooms
+      parameters:
+        - in: path
+          name: pkey
+          required: true
+          schema:
+            type: string
+        # - $ref: '#/components/parameters/GcUserId'
+        # - $ref: '#/components/parameters/GcUserName'
+        # - $ref: '#/components/parameters/GcUserEmail'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Newsrooms'
+                  message:
+                    type: string
+                  isSuccess:
+                    type: boolean
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'

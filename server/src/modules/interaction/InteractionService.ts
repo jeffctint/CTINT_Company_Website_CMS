@@ -72,20 +72,21 @@ export const getInteractions = async ({
   logger.info(JSON.stringify(logBody, null, 2));
 
   // Execute the stored procedure
-  const result = await request.execute('dbo.p_newsroom_getNewsroomBySearch');
+  const result = await request.execute('dbo.p_newsroom_getNewsroomList');
 
+  console.log("result", result)
   // Get the row count and page count
-  const rowCount = result.output.total_rows;
-  const pageCount = result.output.total_pages;
+  const resultCode = result.output.resultCode;
+  const errMsg = result.output.errMsg;
 
   // Log the total rows and page count
-  logger.info(`Total rows: ${rowCount} and total pages: ${pageCount}`);
+  logger.info(`Result code: ${resultCode} and Errmsg: ${errMsg}`);
 
   // Return the recordset for a single statement and do some data transformation
   return {
     list: result.recordsets[0],
-    rowCount: rowCount ?? 0,
-    pageCount: pageCount ?? 0,
+    rowCount: resultCode ?? 0,
+    pageCount: errMsg ?? '',
   };
 };
 
