@@ -6,7 +6,7 @@ import { MdOutlineDateRange } from "react-icons/md";
 import { IconCloudUpload, IconDownload, IconX } from "@tabler/icons-react";
 import dayjs from "dayjs";
 
-import { Button } from "@app/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import {
   Form,
   FormControl,

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import * as z from "zod";
-import { Button } from "@app/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import {
   Form,
   FormControl,
