@@ -10,6 +10,8 @@ import { FileWithPath } from "@mantine/dropzone";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { CreateNewsProps } from "@/types";
+import { useRouter } from "next/navigation";
 
 const infoSchema = z.object({
   name: z.string(),
@@ -45,8 +47,24 @@ const newsSchema = news.required({
   newsContentHk: true,
 });
 
+const createNews = async (data: CreateNewsProps) => {
+  const res = await fetch("http://localhost:10443/v1/newsrooms/createNews", {
+    method: "POST", // *GET, POST, PUT, DELETE, etc.
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-store", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+
+  return res;
+};
+
 const CreateNews = () => {
-  const [title, setTitle] = useState("");
+  // const [title, setTitle] = useState("");
+  const router = useRouter();
   const form = useForm<z.infer<typeof newsSchema>>({
     resolver: zodResolver(newsSchema),
     defaultValues: {
@@ -85,12 +103,31 @@ const CreateNews = () => {
     );
   });
 
-  const onFinishHandler = (values: any) => {
-    values = {
-      ...values,
-      images: files,
-    };
+  const onFinishHandler = async (values: any) => {
+    // values = {
+    //   ...values,
+    //   images: files,
+    // };
     console.log(1111, values);
+    const body = {
+      newsTitle: values.newsTitle,
+      newsContent: values.newsContentEn,
+      newsDate: values.newsDate,
+      // resourceList: values.info || "",
+      // relatedNewsList: null,
+      createUserPkey: "Jeff",
+      newsStatus: values.status,
+      // imageName: files,
+    };
+    try {
+      await createNews(body).then((res) => {
+        if (res.errMsg === "" && res.isSuccess) {
+          router.push("/newsrooms");
+        }
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleUpload = (data: any) => {

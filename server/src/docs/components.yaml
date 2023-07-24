@@ -1,5 +1,67 @@
 components:
   schemas:
+    CreateNews:
+      type: object
+      properties:
+        newsTitle:
+          type: string
+          required: true
+        newsContent:
+          type: string
+          required: true
+        newsDate:
+          type: string
+          required: true
+        imagePkey:
+          type: array
+        status:
+          type: string
+        resourceList:
+          type: array
+        relatedNewsList:
+          type: array
+        example:
+          newsTitle: 'I am Title'
+          newsContent: '<p>I am content</p>'
+          startDate: '2023-03-01T00:00:00.000Z'
+          endDate: '2023-03-30T00:00:00.000Z'
+          resourceList: 1
+          relatedNewsList: 25
+    News:
+      type: object
+      properties:
+        code:
+          type: string
+        createDatetime:
+          type: string
+        createUserPkey:
+          type: string
+        dbUser:
+          type: string
+        effDate:
+          type: string
+        effSeq:
+          type: string
+        imagePkey:
+          type: string
+        latestUpdateDatetime:
+          type: string
+        latestUpdateUserPkey:
+          type: string
+        lockCounter:
+          type: number
+        newsDate:
+          type: string
+        newsTitle:
+          type: string
+        pkey:
+          type: string
+        serviceAgreementTypeDesc:
+          type: string
+        status:
+          type: string
+        statusDesc:
+          type: string
     Interaction:
       type: object
       properties:

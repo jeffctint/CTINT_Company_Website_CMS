@@ -52,3 +52,19 @@ export interface RelatedNewsProps {
   referenceCode?: string;
   newsroomCode?: string;
 }
+
+export interface CreateNewsProps {
+  newsTitle: string;
+  newsContent: string;
+  newsDate: Datetime;
+  resourceList?: ResourceProps[];
+  relatedNewsList?: [];
+  createUserPkey?: string;
+  newsStatus: string;
+  imageName?: FileWithPath[];
+}
+
+export interface ResourceProps {
+  name: string;
+  website: string;
+}
