@@ -90,7 +90,7 @@ import NewsCard from "../components/NewsCard";
 // ];
 
 const getNewsList = async () => {
-  const res = await fetch("http://localhost:10443/v1/interactions", {
+  const res = await fetch("http://localhost:10443/v1/newsrooms", {
     method: "POST", // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
     cache: "no-store", // *default, no-cache, reload, force-cache, only-if-cached
@@ -113,13 +113,13 @@ const Newsrooms = async () => {
         <CreateButton pathname="/newsrooms/create" />
       </div>
       <div className="p-4 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        {news.data.map(
-          ({ imagePkey, newsTitle, newsDate, code }: NewsProps) => (
+        {news.data.recordsets[0].map(
+          ({ imagePkey, newsTitle, newsDate, pkey }: NewsProps) => (
             <NewsCard
               imagePkey={imagePkey}
               newsTitle={newsTitle}
               newsDate={newsDate}
-              code={code}
+              pkey={pkey}
             />
           )
         )}

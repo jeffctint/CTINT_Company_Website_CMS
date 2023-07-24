@@ -18,27 +18,26 @@ export interface NewsProps {
 }
 
 export interface NewsCardProps {
-    imagePkey: string;
-    newsTitle: string;
-    newsDate: string;
-    code: string;
+  imagePkey: string;
+  newsTitle: string;
+  newsDate: string;
+  pkey: string;
 }
 
 export interface CreateNewsFormProps {
   type: string;
   register: any;
-  type:string;
+  type: string;
   handleSubmit: FormEventHandler<HTMLFormElement> | undefined;
   onFinishHandler: (data: FieldValues) => Promise<void> | void;
   form: any;
   control: Control;
   register: UseFormRegister;
   fields: UseFieldArrayProps;
-  append:UseFieldArrayAppend;
+  append: UseFieldArrayAppend;
   remove: UseFieldArrayRemove;
-  files: any
-  handleUpload: (data:any) =>void;
-
+  files: any;
+  handleUpload: (data: any) => void;
 }
 
 export interface ResourceProps {

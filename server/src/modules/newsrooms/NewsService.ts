@@ -62,7 +62,7 @@ export const getNewsDetailByPkey = async ({ pkey }: any) => {
 
   // Execute the stored procedure
   const result = await request.execute('dbo.p_newsroom_getNewsroomByPkey');
-
+  console.log(result);
   // Get the resultCode and errMsg
   const resultCode = result.output.resultCode;
   const errMsg = result.output.errMsg;

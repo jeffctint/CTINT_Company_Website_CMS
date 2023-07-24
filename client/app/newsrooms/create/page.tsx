@@ -10,7 +10,6 @@ import { FileWithPath } from "@mantine/dropzone";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import dayjs from "dayjs";
 import Link from "next/link";
-import Image from "next/image";
 
 const infoSchema = z.object({
   name: z.string(),
