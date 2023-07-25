@@ -106,6 +106,7 @@ const getNewsList = async () => {
 const Newsrooms = async () => {
   const news = await getNewsList();
 
+  console.log("news", news);
   return (
     <div className="flex flex-col text-white text-2xl overflow-y-auto">
       <div className="p-4 flex flex-row justify-between items-center w-full">

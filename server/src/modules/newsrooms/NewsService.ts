@@ -11,12 +11,14 @@ interface ResourceProps {
 interface CreateNewsProps {
   newsTitle: string;
   newsContent: string;
+  newsContentEn: string;
+  newsContentHk: string;
   newsDate: Date;
   resourceList?: string;
   relatedNewsList?: ResourceProps[];
   newsStatus?: string;
   createUserPkey?: string;
-  imageName?: string[];
+  imagesList?: string[];
 }
 
 export const getNewsList = async ({}): Promise<any> => {
@@ -34,7 +36,7 @@ export const getNewsList = async ({}): Promise<any> => {
   logger.info(JSON.stringify(logBody, null, 2));
 
   // Execute the stored procedure
-  const result = await request.execute('dbo.p_newsroom_getNewsroomList');
+  const result = await request.execute('dbo.p_newsroom_getCustomNewsroomList');
 
   console.log('result', result);
   // Get the resultCode and errMsg
@@ -77,7 +79,7 @@ export const getNewsDetailByPkey = async ({ pkey }: any) => {
   logger.info(JSON.stringify(logBody, null, 2));
 
   // Execute the stored procedure
-  const result = await request.execute('dbo.p_newsroom_getNewsroomByPkey');
+  const result = await request.execute('dbo.p_newsroom_getCustomNewsroomByPkey');
   console.log(result);
   // Get the resultCode and errMsg
   const resultCode = result.output.resultCode;
@@ -97,24 +99,29 @@ export const getNewsDetailByPkey = async ({ pkey }: any) => {
 export const createNews = async ({
   newsTitle,
   newsContent,
+  newsContentEn,
+  newsContentHk,
   newsDate,
   resourceList,
-  relatedNewsList,
+  //   relatedNewsList,
   newsStatus,
   createUserPkey,
-  imageName,
+  imagesList,
 }: CreateNewsProps): Promise<any> => {
   const request = await sqlRequest();
 
   // Set the input parameters
   request.input('newsTitle', sqlNVarChar, newsTitle);
   request.input('newsContent', sqlNVarChar, newsContent);
+  request.input('newsContentEn', sqlNVarChar, newsContentEn);
+  request.input('newsContentHk', sqlNVarChar, newsContentHk);
+
   request.input('newsDate', sqlDatetime, newsDate);
-  request.input('resourceList', sqlNVarChar, resourceList);
-  request.input('relatedNewsList', sqlNVarChar, relatedNewsList);
+  request.input('resourceList', sqlNVarChar, JSON.stringify(resourceList));
+  //   request.input('relatedNewsList', sqlNVarChar, relatedNewsList);
   request.input('newsStatus', sqlNVarChar, newsStatus);
   request.input('createUserPkey', sqlNVarChar, createUserPkey);
-  request.input('imageName', sqlNVarChar, imageName);
+  request.input('imagesList', sqlNVarChar, JSON.stringify(imagesList));
 
   // Set the output parameters
   request.output('resultCode', sqlInt);
@@ -128,10 +135,10 @@ export const createNews = async ({
       newsContent,
       newsDate,
       resourceList,
-      relatedNewsList,
+      //   relatedNewsList,
       newsStatus,
       createUserPkey,
-      imageName,
+      imagesList,
     },
     inputParameters: request.parameters,
   };
@@ -139,7 +146,7 @@ export const createNews = async ({
   // Log the logBody
   logger.info(JSON.stringify(logBody, null, 2));
   // Execute the stored procedure
-  const result = await request.execute('dbo.p_newsroom_createNewsroom');
+  const result = await request.execute('dbo.p_newsroom_createCustomNewsroom');
   console.log(result);
   // Get the resultCode and errMsg
   const resultCode = result.output.resultCode;

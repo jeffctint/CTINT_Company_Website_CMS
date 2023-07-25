@@ -7,7 +7,12 @@ import parse from "html-react-parser";
 import CreateNewsForm from "@app/components/CreateNewsForm";
 
 import { FileWithPath } from "@mantine/dropzone";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import {
+  useFieldArray,
+  useForm,
+  useWatch,
+  SubmitHandler,
+} from "react-hook-form";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { CreateNewsProps } from "@/types";
@@ -49,10 +54,10 @@ const newsSchema = news.required({
 
 const createNews = async (data: CreateNewsProps) => {
   const res = await fetch("http://localhost:10443/v1/newsrooms/createNews", {
-    method: "POST", // *GET, POST, PUT, DELETE, etc.
-    mode: "cors", // no-cors, *cors, same-origin
-    cache: "no-store", // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: "same-origin", // include, *same-origin, omit
+    method: "POST",
+    mode: "cors",
+    cache: "no-store",
+    credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
     },
@@ -104,26 +109,42 @@ const CreateNews = () => {
   });
 
   const onFinishHandler = async (values: any) => {
-    // values = {
-    //   ...values,
-    //   images: files,
-    // };
-    console.log(1111, values);
+    const customResource = values.info.map((item: any) => {
+      return {
+        ...item,
+        referenceCode: "ALL",
+        referenceType: "NEWSROOM",
+      };
+    });
+
+    const customImages = files.map((image: any) => {
+      return {
+        ...image,
+        path: image.path,
+        name: image.path,
+      };
+    });
+
     const body = {
       newsTitle: values.newsTitle,
       newsContent: values.newsContentEn,
+      newsContentEn: values.newsContentEn,
+      newsContentHk: values.newsContentHk,
+
       newsDate: values.newsDate,
-      // resourceList: values.info || "",
+      resourceList: customResource ?? [],
       // relatedNewsList: null,
       createUserPkey: "Jeff",
       newsStatus: values.status,
-      // imageName: files,
+      imagesList: customImages,
     };
+    console.log("submit form", JSON.stringify(values.info));
+
     try {
       await createNews(body).then((res) => {
-        if (res.errMsg === "" && res.isSuccess) {
-          router.push("/newsrooms");
-        }
+        // if (res.errMsg === "" && res.isSuccess) {
+        //   router.push("/newsrooms");
+        // }
       });
     } catch (err) {
       console.error(err);

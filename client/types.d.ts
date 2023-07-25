@@ -56,12 +56,16 @@ export interface RelatedNewsProps {
 export interface CreateNewsProps {
   newsTitle: string;
   newsContent: string;
+  newsContentEn: string;
+  newsContentHk?: string;
+  newsContentJp?: string;
+  newsContentCn?: string;
   newsDate: Datetime;
   resourceList?: ResourceProps[];
   relatedNewsList?: [];
   createUserPkey?: string;
   newsStatus: string;
-  imageName?: FileWithPath[];
+  imagesList?: FileWithPath[];
 }
 
 export interface ResourceProps {

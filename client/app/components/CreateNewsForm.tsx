@@ -232,7 +232,11 @@ const CreateNewsForm = ({
           <FormLabel className="flex flex-row justify-between items-center">
             <div className="text-[#a9b3c6]">More Infomation</div>
             <Button
-              onClick={() => append({ name: "", website: "" })}
+              type="button"
+              onClick={() => {
+                console.log("append", append());
+                append({ name: "", website: "" });
+              }}
               className="bg-transparent border-[#97f64d] border-[1px] text-[#97f64d]"
             >
               Add Infomation
