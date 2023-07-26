@@ -101,3 +101,33 @@ paths:
           $ref: '#/components/responses/NotFound'
         '401':
           $ref: '#/components/responses/Unauthorized'
+  /newsrooms/updateNews:
+    post:
+      summary: Update newsroom
+      description: Update newsroom
+      tags:
+        - Newsrooms
+      requestBody:
+        description: Update News Body
+        required: true
+        content:
+          application/json:
+            $$ref: '#/components/schemas/updateNews'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/News'
+                  message:
+                    type: string
+                  isSuccess:
+                    type: boolean
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'

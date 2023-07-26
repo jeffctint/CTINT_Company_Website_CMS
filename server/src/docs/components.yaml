@@ -1,14 +1,23 @@
 components:
   schemas:
-    CreateNews:
+    UpdateNews:
       type: object
       properties:
+        pkey:
+          type: string
+          required: true
         newsTitle:
           type: string
           required: true
-        newsContent:
+        newsContentEn:
           type: string
           required: true
+        newsContentHk:
+          type: string
+        newsContentJp:
+          type: string
+        newsContentCn:
+          type: string
         newsDate:
           type: string
           required: true
@@ -20,6 +29,37 @@ components:
           type: array
         relatedNewsList:
           type: array
+        lockNumber:
+          type: number
+          required: true
+    CreateNews:
+      type: object
+      properties:
+        newsTitle:
+          type: string
+          required: true
+        newsContentEn:
+          type: string
+          required: true
+        newsContentHk:
+          type: string
+        newsContentJp:
+          type: string
+        newsContentCn:
+          type: string
+        newsDate:
+          type: string
+          required: true
+        imagePkey:
+          type: array
+        status:
+          type: string
+        resourceList:
+          type: array
+        relatedNewsList:
+          type: array
+        imagePath:
+          type: string
         example:
           newsTitle: 'I am Title'
           newsContent: '<p>I am content</p>'

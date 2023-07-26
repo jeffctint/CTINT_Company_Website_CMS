@@ -5,7 +5,6 @@ export interface NewsProps {
   dbUser: string;
   effDate: string;
   effSeq: string;
-  imagePkey: string;
   latestUpdateDatetime: string;
   latestUpdateUserPkey: string;
   lockCounter: number;
@@ -15,10 +14,11 @@ export interface NewsProps {
   serviceAgreementTypeDesc: string;
   status: string;
   statusDesc: string;
+  imagePath: string;
 }
 
 export interface NewsCardProps {
-  imagePkey: string;
+  imagePath: string;
   newsTitle: string;
   newsDate: string;
   pkey: string;

@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 
-const NewsCard = ({ imagePkey, newsTitle, newsDate, pkey }: NewsCardProps) => {
+const NewsCard = ({ imagePath, newsTitle, newsDate, pkey }: NewsCardProps) => {
   return (
     <Link href={`/newsrooms/${pkey}`}>
       <Card className="border-none overflow-clip bg-[#181f25] cursor-pointer">
@@ -13,7 +13,7 @@ const NewsCard = ({ imagePkey, newsTitle, newsDate, pkey }: NewsCardProps) => {
           <Image
             width={380}
             height={320}
-            src={`https://ctint-website.azurewebsites.net/newsroom/${imagePkey}`}
+            src={`https://ctint-website.azurewebsites.net/newsroom/${imagePath}`}
             alt={newsTitle}
           />
         </CardContent>
