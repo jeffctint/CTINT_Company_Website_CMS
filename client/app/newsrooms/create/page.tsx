@@ -13,6 +13,8 @@ import {
   useWatch,
   SubmitHandler,
 } from "react-hook-form";
+
+import { v4 as uuidv4 } from "uuid";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { CreateNewsProps } from "@/types";
@@ -39,6 +41,8 @@ const news = z
     newsDate: z.date(),
     newsContentEn: z.string(),
     newsContentHk: z.string(),
+    newsContentJp: z.string(),
+    newsContentCn: z.string(),
     info: z.array(infoSchema),
     status: z.string(),
     imgUrls: z.array(imgSchema),
@@ -49,7 +53,7 @@ const newsSchema = news.required({
   newsTitle: true,
   newsDate: true,
   newsContentEn: true,
-  newsContentHk: true,
+  status: true,
 });
 
 const createNews = async (data: CreateNewsProps) => {
@@ -94,7 +98,9 @@ const CreateNews = () => {
   const watchInfo = useWatch({ control, name: "info" });
 
   const [files, setFiles] = useState<FileWithPath[]>([]); //upload images
+
   const previews = files.map((file: any, index: number) => {
+    //mantine show images previews
     const imageUrl = URL.createObjectURL(file);
     return (
       <img
@@ -121,7 +127,7 @@ const CreateNews = () => {
       return {
         ...image,
         path: image.path,
-        name: image.path,
+        name: image.name,
       };
     });
 
@@ -130,21 +136,22 @@ const CreateNews = () => {
       newsContent: values.newsContentEn,
       newsContentEn: values.newsContentEn,
       newsContentHk: values.newsContentHk,
-
+      newsContentJp: values.newsContentJp,
+      newsContentCn: values.newsContentCn,
       newsDate: values.newsDate,
       resourceList: customResource ?? [],
+      imagePath: files[0].path ?? "",
       // relatedNewsList: null,
       createUserPkey: "Jeff",
       newsStatus: values.status,
       imagesList: customImages,
     };
-    console.log("submit form", JSON.stringify(values.info));
 
     try {
       await createNews(body).then((res) => {
-        // if (res.errMsg === "" && res.isSuccess) {
-        //   router.push("/newsrooms");
-        // }
+        if (res.errMsg === "" && res.isSuccess) {
+          router.push("/newsrooms");
+        }
       });
     } catch (err) {
       console.error(err);
