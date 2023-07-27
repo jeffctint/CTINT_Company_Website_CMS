@@ -38,6 +38,26 @@ export interface CreateNewsFormProps {
   remove: UseFieldArrayRemove;
   files: any;
   handleUpload: (data: any) => void;
+  isLoading: boolean;
+}
+
+export interface NewsDetailFormProps {
+  type: string;
+  register: any;
+  type: string;
+  handleSubmit: FormEventHandler<HTMLFormElement> | undefined;
+  onFinishHandler: (data: FieldValues) => Promise<void> | void;
+  form: any;
+  control: Control;
+  register: UseFormRegister;
+  fields: UseFieldArrayProps;
+  append: UseFieldArrayAppend;
+  remove: UseFieldArrayRemove;
+  files: any;
+  handleUpload: (data: any) => void;
+  isLoading: boolean;
+  newsDetail: any;
+  isEdit: boolean;
 }
 
 export interface ResourceProps {
@@ -72,3 +92,9 @@ export interface ResourceProps {
   name: string;
   website: string;
 }
+
+export type DetailPkeyProps = {
+  params: {
+    pkey: string;
+  };
+};

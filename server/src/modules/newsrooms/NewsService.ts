@@ -100,11 +100,7 @@ export const getNewsDetailByPkey = async ({ pkey }: any) => {
   // Create the log body for the logger
   const logBody = {
     action: 'getInteractionDetailById',
-    // user: {
-    //   userId,
-    //   name,
-    //   email,
-    // },
+
     inputParameters: request.parameters,
   };
 
@@ -121,9 +117,16 @@ export const getNewsDetailByPkey = async ({ pkey }: any) => {
   // Log the total rows and page count
   logger.info(`Result code: ${resultCode} and Errmsg: ${errMsg}`);
 
+  const news = {
+    newsContent: result.recordsets[0],
+    info: result.recordsets[1],
+    relatedNews: result.recordsets[2],
+    images: result.recordsets[3],
+  };
+
   // Return the recordset for a single statement and do some data transformation
   return {
-    result: result,
+    result: news,
     resultCode: resultCode ?? 0,
     errMsg: errMsg ?? '',
   };

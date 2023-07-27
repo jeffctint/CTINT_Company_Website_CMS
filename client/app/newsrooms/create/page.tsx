@@ -14,11 +14,11 @@ import {
   SubmitHandler,
 } from "react-hook-form";
 
-import { v4 as uuidv4 } from "uuid";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { CreateNewsProps } from "@/types";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 
 const infoSchema = z.object({
   name: z.string(),
@@ -73,6 +73,15 @@ const createNews = async (data: CreateNewsProps) => {
 
 const CreateNews = () => {
   // const [title, setTitle] = useState("");
+
+  const createNewsMutation = useMutation({
+    mutationFn: createNews,
+    onSuccess: (res) => {
+      if (res.errMsg === "" && res.isSuccess) {
+        router.push("/newsrooms");
+      }
+    },
+  });
   const router = useRouter();
   const form = useForm<z.infer<typeof newsSchema>>({
     resolver: zodResolver(newsSchema),
@@ -91,28 +100,28 @@ const CreateNews = () => {
     name: "info",
   });
 
-  const watchNewsTitle = useWatch({ control, name: "newsTitle" });
-  const watchNewsDate = useWatch({ control, name: "newsDate" });
-  const watchNewsContentEn = useWatch({ control, name: "newsContentEn" });
-  const watchNewsContentHk = useWatch({ control, name: "newsContentHk" });
-  const watchInfo = useWatch({ control, name: "info" });
+  // const watchNewsTitle = useWatch({ control, name: "newsTitle" });
+  // const watchNewsDate = useWatch({ control, name: "newsDate" });
+  // const watchNewsContentEn = useWatch({ control, name: "newsContentEn" });
+  // const watchNewsContentHk = useWatch({ control, name: "newsContentHk" });
+  // const watchInfo = useWatch({ control, name: "info" });
 
   const [files, setFiles] = useState<FileWithPath[]>([]); //upload images
 
-  const previews = files.map((file: any, index: number) => {
-    //mantine show images previews
-    const imageUrl = URL.createObjectURL(file);
-    return (
-      <img
-        width={"100%"}
-        height={"100%"}
-        key={index}
-        src={imageUrl}
-        alt={file.name}
-        className=" object-cover"
-      />
-    );
-  });
+  // const previews = files.map((file: any, index: number) => {
+  //   //mantine show images previews
+  //   const imageUrl = URL.createObjectURL(file);
+  //   return (
+  //     <img
+  //       width={"100%"}
+  //       height={"100%"}
+  //       key={index}
+  //       src={imageUrl}
+  //       alt={file.name}
+  //       className=" object-cover"
+  //     />
+  //   );
+  // });
 
   const onFinishHandler = async (values: any) => {
     const customResource = values.info.map((item: any) => {
@@ -147,12 +156,10 @@ const CreateNews = () => {
       imagesList: customImages,
     };
 
+    console.log("customImages", customImages);
+
     try {
-      await createNews(body).then((res) => {
-        if (res.errMsg === "" && res.isSuccess) {
-          router.push("/newsrooms");
-        }
-      });
+      createNewsMutation.mutate(body);
     } catch (err) {
       console.error(err);
     }
@@ -163,8 +170,8 @@ const CreateNews = () => {
   };
 
   return (
-    <div className="flex flex-row w-full h-[1000px] overflow-auto">
-      <div className="flex flex-col p-8 w-1/2 min-h-full">
+    <div className="flex w-full h-[1000px] justify-center overflow-auto">
+      <div className="flex flex-col p-8 w-1/2 max-w-[800px] min-h-full">
         <div className="border-b-[1px] border-[#454e5f] pb-4 mb-4">
           <h1 className="font-bold text-4xl text-white">Create New News</h1>
         </div>
@@ -180,35 +187,8 @@ const CreateNews = () => {
           remove={remove}
           files={files}
           handleUpload={handleUpload}
+          isLoading={createNewsMutation.isLoading}
         />
-      </div>
-      <div className="flex flex-col items-center p-8 w-1/2 min-h-full text-white">
-        <div className="mb-4 w-full">{previews[0]}</div>
-        <div>
-          <h1 className="font-bold text-4xl text-center mb-4">
-            {watchNewsTitle}
-          </h1>
-        </div>
-
-        <div className="w-full flex justify-end mb-4">
-          {dayjs(watchNewsDate).format("DD/MMM/YYYY")}
-        </div>
-        <div className="w-full text-lg mb-4 text-white">
-          {parse(watchNewsContentEn!)}
-        </div>
-        <div className="w-full text-lg mb-4">{parse(watchNewsContentHk!)}</div>
-        <div className="w-full">
-          {watchInfo?.map((info, i) => (
-            <Link
-              target="_blank"
-              key={i}
-              href={info.website}
-              className="hover:underline"
-            >
-              {info.name}
-            </Link>
-          ))}
-        </div>
       </div>
     </div>
   );

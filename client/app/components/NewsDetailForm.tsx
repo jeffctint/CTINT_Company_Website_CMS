@@ -1,6 +1,6 @@
 "use client";
 import { useRef } from "react";
-import { CreateNewsFormProps } from "@/types";
+import { CreateNewsFormProps, NewsDetailFormProps } from "@/types";
 import TextEditor from "@app/components/TextEditor";
 import { MdOutlineDateRange } from "react-icons/md";
 import { IconCloudUpload, IconDownload, IconX } from "@tabler/icons-react";
@@ -39,7 +39,7 @@ import {
 } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 
-const CreateNewsForm = ({
+const NewsDetailForm = ({
   type,
   handleSubmit,
   onFinishHandler,
@@ -52,7 +52,9 @@ const CreateNewsForm = ({
   files,
   handleUpload,
   isLoading,
-}: CreateNewsFormProps) => {
+  newsDetail,
+  isEdit,
+}: NewsDetailFormProps) => {
   const openRef = useRef<() => void>(null);
 
   const previews = files.map((file: any, index: number) => {
@@ -69,7 +71,7 @@ const CreateNewsForm = ({
     );
   });
 
-  console.log("files", files);
+  console.log("newsDetail", newsDetail);
 
   return (
     <Form {...form}>
@@ -86,6 +88,9 @@ const CreateNewsForm = ({
               <FormControl>
                 <Input
                   {...field}
+                  disabled={!isEdit}
+                  placeholder={newsDetail?.newsTitle}
+                  // defaultValue={newsDetail?.newsTitle}
                   className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
                 />
               </FormControl>
@@ -103,7 +108,7 @@ const CreateNewsForm = ({
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
-                    <Button variant={"outline"}>
+                    <Button variant={"outline"} disabled={!isEdit}>
                       {field.value ? (
                         dayjs(field.value).format("DD/MMM/YYYY")
                       ) : (
@@ -282,16 +287,18 @@ const CreateNewsForm = ({
           </ul>
         </FormItem>
 
-        <Button
-          disabled={isLoading}
-          type="submit"
-          className="w-full bg-[#97f64d] text-[#181f25] hover:bg-[#97f64d] my-10"
-        >
-          {isLoading ? "Loading" : "Submit"}
-        </Button>
+        {isEdit ? (
+          <Button
+            disabled={isLoading}
+            type="submit"
+            className="w-full bg-[#97f64d] text-[#181f25] hover:bg-[#97f64d] my-10"
+          >
+            {isLoading ? "Loading" : "Submit"}
+          </Button>
+        ) : null}
       </form>
     </Form>
   );
 };
 
-export default CreateNewsForm;
+export default NewsDetailForm;
