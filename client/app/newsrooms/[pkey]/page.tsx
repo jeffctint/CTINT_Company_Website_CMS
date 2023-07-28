@@ -1,14 +1,14 @@
 "use client";
 
 import NewsDetailForm from "@app/components/NewsDetailForm";
-import parse from "html-react-parser";
+
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useState, cache, use } from "react";
 import { FileWithPath } from "@mantine/dropzone";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { DetailPkeyProps } from "@/types";
 import { Button } from "@app/components/ui/button";
 import dayjs from "dayjs";
@@ -45,7 +45,7 @@ const imgSchema = z.object({
 const news = z
   .object({
     newsTitle: z.string(),
-    newsDate: z.string(),
+    newsDate: z.date(),
     newsContentEn: z.string(),
     newsContentHk: z.string(),
     newsContentJp: z.string(),
@@ -71,22 +71,29 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const router = useRouter();
 
   const newsDetailQuery = useQuery({
-    queryKey: ["detail"],
+    queryKey: ["detail", pkey],
     queryFn: () => getNewsDetailByPkey(pkey),
   });
 
-  const detail = newsDetailQuery?.data?.data?.result?.newsContent[0]; // fetched data
+  console.log("pkey", pkey, newsDetailQuery);
+
+  const detail = newsDetailQuery?.data?.data?.newsContent[0]; // fetched data
+  const info = newsDetailQuery?.data?.data?.info;
+  const images = newsDetailQuery?.data?.data?.images;
 
   const form = useForm<z.infer<typeof newsSchema>>({
     resolver: zodResolver(newsSchema),
     defaultValues: {
       newsTitle: detail?.newsTitle,
-      newsDate: dayjs(detail?.newsDate).format("DD/MMM/YYYY"),
-      newsContentEn: detail?.newsContentEn,
-      newsContentHk: detail?.newsContentHk,
+      newsDate: new Date(),
+      newsContentEn: "",
+      newsContentHk: "",
+      status: "",
+      // info: infoFields,
     },
   });
-  const { control, register, handleSubmit } = form;
+  const { control, register, handleSubmit, watch } = form;
+  console.log(33333, watch("newsTitle"));
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -125,7 +132,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     //   newsStatus: values.status,
     //   imagesList: customImages,
     // };
-    console.log("values", typeof values.newsDate);
+    console.log("values", values);
 
     // try {
     //   // createNewsMutation.mutate(body);
@@ -137,6 +144,10 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const handleUpload = (data: any) => {
     setFiles(data);
   };
+
+  if (newsDetailQuery.isFetching) {
+    return <div>Loading ...</div>;
+  }
 
   return (
     <div className="flex w-full h-[1000px] justify-center overflow-auto relative">
@@ -165,6 +176,8 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
           handleUpload={handleUpload}
           isLoading={false}
           newsDetail={detail}
+          info={info}
+          images={images}
           isEdit={isEdit}
         />
       </div>

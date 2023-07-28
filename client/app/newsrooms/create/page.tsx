@@ -93,8 +93,8 @@ const CreateNews = () => {
     },
   });
 
-  const { control, register, handleSubmit } = form;
-
+  const { control, register, handleSubmit, watch } = form;
+  console.log(watch("newsDate"));
   const { fields, append, remove } = useFieldArray({
     control,
     name: "info",
@@ -149,7 +149,7 @@ const CreateNews = () => {
       newsContentCn: values.newsContentCn,
       newsDate: values.newsDate,
       resourceList: customResource ?? [],
-      imagePath: files[0].path ?? "",
+      imagePath: files.length !== 0 ? files?.[0].path : "",
       // relatedNewsList: null,
       createUserPkey: "Jeff",
       newsStatus: values.status,
@@ -157,6 +157,7 @@ const CreateNews = () => {
     };
 
     console.log("customImages", customImages);
+    console.log("body", body);
 
     try {
       createNewsMutation.mutate(body);

@@ -1,10 +1,11 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { CreateNewsFormProps, NewsDetailFormProps } from "@/types";
 import TextEditor from "@app/components/TextEditor";
 import { MdOutlineDateRange } from "react-icons/md";
 import { IconCloudUpload, IconDownload, IconX } from "@tabler/icons-react";
 import dayjs from "dayjs";
+import parse from "html-react-parser";
 
 import { Button } from "@/app/components/ui/button";
 import {
@@ -54,8 +55,11 @@ const NewsDetailForm = ({
   isLoading,
   newsDetail,
   isEdit,
+  info,
+  images,
 }: NewsDetailFormProps) => {
   const openRef = useRef<() => void>(null);
+  const watchNewsContentEn = form.watch("newsContentEn");
 
   const previews = files.map((file: any, index: number) => {
     const imageUrl = URL.createObjectURL(file);
@@ -70,8 +74,6 @@ const NewsDetailForm = ({
       />
     );
   });
-
-  console.log("newsDetail", newsDetail);
 
   return (
     <Form {...form}>
@@ -89,8 +91,8 @@ const NewsDetailForm = ({
                 <Input
                   {...field}
                   disabled={!isEdit}
-                  placeholder={newsDetail?.newsTitle}
-                  // defaultValue={newsDetail?.newsTitle}
+                  value={field.value}
+                  onChange={field.onChange}
                   className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
                 />
               </FormControl>
@@ -108,7 +110,11 @@ const NewsDetailForm = ({
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
-                    <Button variant={"outline"} disabled={!isEdit}>
+                    <Button
+                      type="button"
+                      variant={"outline"}
+                      disabled={!isEdit}
+                    >
                       {field.value ? (
                         dayjs(field.value).format("DD/MMM/YYYY")
                       ) : (
@@ -135,35 +141,64 @@ const NewsDetailForm = ({
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="newsContentEn"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[#a9b3c6]">News Content EN</FormLabel>
-              <FormControl>
-                <TextEditor
-                  onChange={field.onChange}
-                  content={field.value}
-                  className="w-3/5"
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        {!isEdit ? (
+          <div className="flex flex-col w-full mt-2">
+            <div className="text-[#a9b3c6] pb-2 text-sm">News Content EN</div>
+            <p
+              className="text-white"
+              dangerouslySetInnerHTML={{ __html: newsDetail?.newsContentEn }}
+            ></p>
+          </div>
+        ) : (
+          <FormField
+            control={form.control}
+            name="newsContentEn"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[#a9b3c6]">
+                  News Content EN
+                </FormLabel>
+                <FormControl>
+                  <TextEditor
+                    onChange={field.onChange}
+                    content={field.value}
+                    className="w-3/5"
+                    initialContent={newsDetail?.newsContentEn}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        )}
 
-        <FormField
-          control={form.control}
-          name="newsContentHk"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[#a9b3c6]">News Content HK</FormLabel>
-              <FormControl>
-                <TextEditor onChange={field.onChange} content={field.value} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        {!isEdit ? (
+          <div className="flex flex-col w-full mt-2">
+            <div className="text-[#a9b3c6] pb-2 text-sm">News Content Hk</div>
+            <p
+              className="text-white"
+              dangerouslySetInnerHTML={{ __html: newsDetail?.newsContentHk }}
+            ></p>
+          </div>
+        ) : (
+          <FormField
+            control={form.control}
+            name="newsContentHk"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[#a9b3c6]">
+                  News Content HK
+                </FormLabel>
+                <FormControl>
+                  <TextEditor
+                    onChange={field.onChange}
+                    content={field.value}
+                    initialContent={newsDetail?.newsContentHk}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        )}
 
         <div>
           <Dropzone
@@ -217,10 +252,14 @@ const NewsDetailForm = ({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-[#a9b3c6]">Status</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={field.onChange || newsDetail?.status}
+                defaultValue={newsDetail?.status}
+                disabled={!isEdit}
+              >
                 <FormControl>
                   <SelectTrigger className="text-white bg-transparent border-[#454e5f]">
-                    <SelectValue placeholder="Select a verified email to display" />
+                    <SelectValue placeholder={newsDetail?.status} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -240,7 +279,6 @@ const NewsDetailForm = ({
             <Button
               type="button"
               onClick={() => {
-                console.log("append", append());
                 append({ name: "", website: "" });
               }}
               className="bg-transparent border-[#97f64d] border-[1px] text-[#97f64d]"
@@ -262,7 +300,10 @@ const NewsDetailForm = ({
                           information
                         </FormLabel>
                         <FormControl>
-                          <Input {...register(`info.${index}.name`)} />
+                          <Input
+                            {...register(`info.${index}.name`)}
+                            defaultValue={item.name}
+                          />
                         </FormControl>
                       </FormItem>
                       <FormItem>
@@ -270,10 +311,14 @@ const NewsDetailForm = ({
                           Website
                         </FormLabel>
                         <FormControl>
-                          <Input {...register(`info.${index}.website`)} />
+                          <Input
+                            {...register(`info.${index}.website`)}
+                            defaultValue={item.website}
+                          />
                         </FormControl>
                       </FormItem>
                       <Button
+                        type="button"
                         className="bg-[#97f64d] text-[#181f25] hover:bg-[#97f64d]"
                         onClick={() => remove(index)}
                       >

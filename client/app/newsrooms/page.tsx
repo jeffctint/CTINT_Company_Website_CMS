@@ -6,11 +6,12 @@ const getNewsList = async () => {
   const res = await fetch("http://localhost:10443/v1/newsrooms", {
     method: "POST",
     mode: "cors",
-    cache: "no-store",
+    cache: "no-cache",
     credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
     },
+    // next: { revalidate: 5 },
   }).then((res) => res.json());
 
   return res;

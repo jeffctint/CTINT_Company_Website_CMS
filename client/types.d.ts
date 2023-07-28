@@ -57,6 +57,8 @@ export interface NewsDetailFormProps {
   handleUpload: (data: any) => void;
   isLoading: boolean;
   newsDetail: any;
+  info?: any;
+  images?: any;
   isEdit: boolean;
 }
 

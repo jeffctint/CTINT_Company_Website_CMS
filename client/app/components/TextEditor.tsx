@@ -10,8 +10,9 @@ import TextStyle from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { useEffect } from "react";
 
-const TextEditor = ({ value, onChange }: any) => {
+const TextEditor = ({ value, onChange, editable, initialContent }: any) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -28,7 +29,12 @@ const TextEditor = ({ value, onChange }: any) => {
     onUpdate({ editor }) {
       onChange(editor.getHTML());
     },
+    editable: editable,
   });
+
+  useEffect(() => {
+    editor?.commands.setContent(initialContent as string);
+  }, [initialContent, editor]);
 
   return (
     <RichTextEditor editor={editor} className="max-w-[1000px]">

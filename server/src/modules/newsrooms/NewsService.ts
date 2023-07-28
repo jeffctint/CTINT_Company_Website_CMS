@@ -126,7 +126,7 @@ export const getNewsDetailByPkey = async ({ pkey }: any) => {
 
   // Return the recordset for a single statement and do some data transformation
   return {
-    result: news,
+    ...news,
     resultCode: resultCode ?? 0,
     errMsg: errMsg ?? '',
   };
