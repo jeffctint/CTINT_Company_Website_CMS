@@ -6,7 +6,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useState, cache, use } from "react";
+import { useState, cache, use, useEffect } from "react";
 import { FileWithPath } from "@mantine/dropzone";
 import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { DetailPkeyProps } from "@/types";
@@ -68,37 +68,34 @@ const newsSchema = news.required({
 const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [files, setFiles] = useState<FileWithPath[]>([]); //upload images
+  const [detailQuery, setDetailQuery] = useState<any>({
+    detail: {},
+    info: [],
+    images: [],
+  });
   const router = useRouter();
 
   const newsDetailQuery = useQuery({
     queryKey: ["detail", pkey],
-    queryFn: () => getNewsDetailByPkey(pkey),
+    queryFn: async () => await getNewsDetailByPkey(pkey),
   });
 
   console.log("pkey", pkey, newsDetailQuery);
+  console.log("detailQuery", detailQuery);
 
   const detail = newsDetailQuery?.data?.data?.newsContent[0]; // fetched data
   const info = newsDetailQuery?.data?.data?.info;
   const images = newsDetailQuery?.data?.data?.images;
 
-  const form = useForm<z.infer<typeof newsSchema>>({
-    resolver: zodResolver(newsSchema),
-    defaultValues: {
-      newsTitle: detail?.newsTitle,
-      newsDate: new Date(),
-      newsContentEn: "",
-      newsContentHk: "",
-      status: "",
-      // info: infoFields,
-    },
-  });
-  const { control, register, handleSubmit, watch } = form;
-  console.log(33333, watch("newsTitle"));
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "info",
-  });
+  // useEffect(() => {
+  //   if (newsDetailQuery.isFetched) {
+  //     setDetailQuery({
+  //       detail: newsDetailQuery?.data?.data?.newsContent[0],
+  //       info: newsDetailQuery?.data?.data?.info,
+  //       images: newsDetailQuery?.data?.data?.images,
+  //     });
+  //   }
+  // }, [newsDetailQuery.status]);
 
   const onFinishHandler = async (values: any) => {
     // const customResource = values.info.map((item: any) => {
@@ -145,9 +142,45 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     setFiles(data);
   };
 
+  const infoFields = info?.map((item: any, index: number) => {
+    return {
+      name: item.name,
+      website: item.website,
+    };
+  });
+
+  console.log("infoFields", infoFields);
+
+  const form = useForm<z.infer<typeof newsSchema>>({
+    resolver: zodResolver(newsSchema),
+    defaultValues: {
+      newsTitle: "",
+      // newsDate: new Date(),
+      // newsContentEn: "",
+      // newsContentHk: "",
+      // status: "ACTIVE",
+      info: [
+        {
+          name: "",
+          website: "",
+        },
+      ],
+    },
+  });
+
+  const { control, register, handleSubmit, watch } = form;
+  console.log(33333, watch("newsTitle"));
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "info",
+  });
+
   if (newsDetailQuery.isFetching) {
     return <div>Loading ...</div>;
   }
+
+  // console.log(77777, detailQuery.detail.newsTitle);
 
   return (
     <div className="flex w-full h-[1000px] justify-center overflow-auto relative">
@@ -160,7 +193,9 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
       <div className="flex flex-col p-8 w-1/2 max-w-[800px] min-h-full">
         <div className="flex flex-row items-center space-x-4 border-b-[1px] border-[#454e5f] pb-4 mb-4">
           <h1 className="font-bold text-4xl text-white">News Detail</h1>
-          <span className="text-md text-white">News code: {detail?.code}</span>
+          <span className="text-md text-white">
+            News code: {detailQuery.detail?.code}
+          </span>
         </div>
         <NewsDetailForm
           type="Edit"

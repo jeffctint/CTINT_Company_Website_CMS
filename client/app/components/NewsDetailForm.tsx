@@ -61,6 +61,33 @@ const NewsDetailForm = ({
   const openRef = useRef<() => void>(null);
   const watchNewsContentEn = form.watch("newsContentEn");
 
+  console.log("newsDetail", newsDetail);
+  console.log("info", info);
+  console.log("images", images);
+
+  // const defaultValue = {
+  //   newsTitle: newsDetail?.newTitle,
+  // };
+
+  useEffect(() => {
+    form.setValue("newsTitle", newsDetail.newsTitle);
+    form.setValue("newsDate", new Date(newsDetail.newsDate));
+    form.setValue("newsContentEn", newsDetail.newsContentEn);
+    form.setValue("newsContentHk", newsDetail.newsContentHk);
+    form.setValue("status", newsDetail.status);
+
+    if (info) {
+      info?.map((item: any, index: number) => {
+        // form.setValue(`info[${index}].name`, info[index].name);
+        // form.setValue(`info[${index}].website`, info[index].website);
+        return (
+          form.setValue(`info[${index}].name`, info[index].name),
+          form.setValue(`info[${index}].website`, info[index].website)
+        );
+      });
+    }
+  }, [newsDetail]);
+
   const previews = files.map((file: any, index: number) => {
     const imageUrl = URL.createObjectURL(file);
     return (
@@ -91,6 +118,7 @@ const NewsDetailForm = ({
                 <Input
                   {...field}
                   disabled={!isEdit}
+                  // defaultValue={newsDetail?.newsTitle}
                   value={field.value}
                   onChange={field.onChange}
                   className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
@@ -253,8 +281,9 @@ const NewsDetailForm = ({
             <FormItem>
               <FormLabel className="text-[#a9b3c6]">Status</FormLabel>
               <Select
+                value={field.value || newsDetail?.status}
                 onValueChange={field.onChange || newsDetail?.status}
-                defaultValue={newsDetail?.status}
+                // defaultValue={newsDetail?.status}
                 disabled={!isEdit}
               >
                 <FormControl>
@@ -277,6 +306,7 @@ const NewsDetailForm = ({
           <FormLabel className="flex flex-row justify-between items-center">
             <div className="text-[#a9b3c6]">More Infomation</div>
             <Button
+              disabled={!isEdit}
               type="button"
               onClick={() => {
                 append({ name: "", website: "" });
@@ -302,7 +332,8 @@ const NewsDetailForm = ({
                         <FormControl>
                           <Input
                             {...register(`info.${index}.name`)}
-                            defaultValue={item.name}
+                            disabled={!isEdit}
+                            // defaultValue={item.name}
                           />
                         </FormControl>
                       </FormItem>
@@ -313,11 +344,13 @@ const NewsDetailForm = ({
                         <FormControl>
                           <Input
                             {...register(`info.${index}.website`)}
-                            defaultValue={item.website}
+                            disabled={!isEdit}
+                            // defaultValue={item.website}
                           />
                         </FormControl>
                       </FormItem>
                       <Button
+                        disabled={!isEdit}
                         type="button"
                         className="bg-[#97f64d] text-[#181f25] hover:bg-[#97f64d]"
                         onClick={() => remove(index)}

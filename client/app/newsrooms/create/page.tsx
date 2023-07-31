@@ -56,6 +56,43 @@ const newsSchema = news.required({
   status: true,
 });
 
+// const convertToBase64 = (e: any) => {
+//   const reader = new FileReader();
+//   reader.readAsDataURL(e);
+//   reader.onload = (e) => {
+//     console.log("reader.result", e.target?.result);
+//     const result = reader.result;
+//     return result;
+//   };
+// };
+
+const convertToBase64 = (file: any) => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = () => {
+      resolve(fileReader.result);
+    };
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+  });
+};
+
+// const convertToBase64 = (file: any) =>
+//   new Promise((resolve, reject) => {
+//     const fileReader = new FileReader();
+//     fileReader.readAsDataURL(file);
+//     fileReader.onload = () => {
+//       resolve(fileReader.result);
+//     };
+//     fileReader.onerror = (error) => {
+//       reject(error);
+//     };
+//   })
+//     .then((res) => console.log(res))
+//     .catch((err) => console.error(err));
+
 const createNews = async (data: CreateNewsProps) => {
   const res = await fetch("http://localhost:10443/v1/newsrooms/createNews", {
     method: "POST",
@@ -108,20 +145,20 @@ const CreateNews = () => {
 
   const [files, setFiles] = useState<FileWithPath[]>([]); //upload images
 
-  // const previews = files.map((file: any, index: number) => {
-  //   //mantine show images previews
-  //   const imageUrl = URL.createObjectURL(file);
-  //   return (
-  //     <img
-  //       width={"100%"}
-  //       height={"100%"}
-  //       key={index}
-  //       src={imageUrl}
-  //       alt={file.name}
-  //       className=" object-cover"
-  //     />
-  //   );
-  // });
+  const previews = files.map((file: any, index: number) => {
+    //mantine show images previews
+    const imageUrl = URL.createObjectURL(file);
+    return (
+      <img
+        width={"100%"}
+        height={"100%"}
+        key={index}
+        src={imageUrl}
+        alt={file.name}
+        className=" object-cover"
+      />
+    );
+  });
 
   const onFinishHandler = async (values: any) => {
     const customResource = values.info.map((item: any) => {
@@ -132,11 +169,14 @@ const CreateNews = () => {
       };
     });
 
-    const customImages = files.map((image: any) => {
+    const customImages = files.map(async (image: any) => {
+      const resultString = await convertToBase64(image);
+
       return {
         ...image,
         path: image.path,
         name: image.name,
+        imageString: resultString,
       };
     });
 
@@ -153,13 +193,14 @@ const CreateNews = () => {
       // relatedNewsList: null,
       createUserPkey: "Jeff",
       newsStatus: values.status,
-      imagesList: customImages,
+      imagesList: await Promise.all(customImages),
     };
 
     console.log("customImages", customImages);
     console.log("body", body);
 
     try {
+      console.log(body);
       createNewsMutation.mutate(body);
     } catch (err) {
       console.error(err);
