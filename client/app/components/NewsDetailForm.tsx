@@ -6,6 +6,7 @@ import { MdOutlineDateRange } from "react-icons/md";
 import { IconCloudUpload, IconDownload, IconX } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import parse from "html-react-parser";
+import { RiDeleteBinLine } from "react-icons/ri";
 
 import { Button } from "@/app/components/ui/button";
 import {
@@ -40,6 +41,19 @@ import {
 } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 
+const convertToBase64 = (file: any) => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = () => {
+      resolve(fileReader.result);
+    };
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+  });
+};
+
 const NewsDetailForm = ({
   type,
   handleSubmit,
@@ -52,11 +66,13 @@ const NewsDetailForm = ({
   remove,
   files,
   handleUpload,
+  setFiles,
   isLoading,
   newsDetail,
   isEdit,
   info,
   images,
+  removeImages,
 }: NewsDetailFormProps) => {
   const openRef = useRef<() => void>(null);
   const watchNewsContentEn = form.watch("newsContentEn");
@@ -77,19 +93,70 @@ const NewsDetailForm = ({
     form.setValue("status", newsDetail.status);
 
     if (info) {
-      info?.map((item: any, index: number) => {
-        // form.setValue(`info[${index}].name`, info[index].name);
-        // form.setValue(`info[${index}].website`, info[index].website);
-        return (
-          form.setValue(`info[${index}].name`, info[index].name),
-          form.setValue(`info[${index}].website`, info[index].website)
-        );
-      });
+      form.setValue("info", info); // very important
     }
-  }, [newsDetail]);
+  }, [newsDetail, info]);
 
-  const previews = files.map((file: any, index: number) => {
-    const imageUrl = URL.createObjectURL(file);
+  useEffect(() => {
+    if (images) {
+      setFiles(images);
+    }
+  }, [images]);
+
+  // const previews = files.map((file: any, index: number) => {
+  //   console.log(file);
+  //   const imageUrl = URL.createObjectURL(file);
+  //   console.log(" imageUrl", imageUrl);
+
+  //   return (
+  //     <Image
+  //       width={"100%"}
+  //       height={80}
+  //       fit="contain"
+  //       key={index}
+  //       src={imageUrl}
+  //       imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
+  //     />
+  //   );
+  // });
+
+  const fetchedPreviews = files.map((item: any, index: number) => {
+    // Convert base64 string to ArrayBuffer
+    const base64ToArrayBuffer = (base64: string) => {
+      // Prepend window.atob to avoid the deprecated warning
+      const binaryString = atob(base64);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      return bytes.buffer;
+    };
+
+    // const binaryString = atob(item.imageString.split(",")[1]);
+
+    if (!item.imageString) {
+      const imageUrl = URL.createObjectURL(item);
+
+      return (
+        <Image
+          width={"100%"}
+          height={80}
+          fit="contain"
+          key={index}
+          src={imageUrl}
+          imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
+        />
+      );
+    }
+
+    const buffer = base64ToArrayBuffer(item.imageString.split(",")[1]);
+    const blob = new Blob([buffer], { type: item.MimeType });
+    const imageUrl = URL.createObjectURL(blob);
+
+    // const imageUrl = URL.createObjectURL(item.imageString);
+    console.log(" fetched imageUrl", imageUrl);
+
     return (
       <Image
         width={"100%"}
@@ -261,13 +328,32 @@ const NewsDetailForm = ({
               </Text>
             </div>
           </Dropzone>
-          <SimpleGrid
+          {/* <SimpleGrid
             cols={4}
             breakpoints={[{ maxWidth: "sm", cols: 1 }]}
             mt={previews.length > 0 ? "xl" : 0}
           >
             {previews.map((img: any, i: number) => (
               <div key={i} className="w-full">
+                {img}
+              </div>
+            ))}
+          </SimpleGrid> */}
+
+          <SimpleGrid
+            cols={4}
+            breakpoints={[{ maxWidth: "sm", cols: 1 }]}
+            mt={fetchedPreviews.length > 0 ? "xl" : 0}
+          >
+            {fetchedPreviews.map((img: any, i: number) => (
+              <div key={i} className="w-full relative">
+                <span
+                  onClick={() => removeImages(i)}
+                  className="absolute right-0 top-1 flex items-center justify-center w-6 h-6 rounded-full text-
+                  [#f9f9fb] hover:bg-[#a9b3c6] z-10 cursor-pointer"
+                >
+                  <RiDeleteBinLine />
+                </span>
                 {img}
               </div>
             ))}

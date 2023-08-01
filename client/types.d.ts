@@ -60,6 +60,8 @@ export interface NewsDetailFormProps {
   info?: any;
   images?: any;
   isEdit: boolean;
+  setFiles: any;
+  removeImages: (i: number) => void;
 }
 
 export interface ResourceProps {
@@ -76,6 +78,21 @@ export interface RelatedNewsProps {
 }
 
 export interface CreateNewsProps {
+  newsTitle: string;
+  newsContent: string;
+  newsContentEn: string;
+  newsContentHk?: string;
+  newsContentJp?: string;
+  newsContentCn?: string;
+  newsDate: Datetime;
+  resourceList?: ResourceProps[];
+  relatedNewsList?: [];
+  createUserPkey?: string;
+  newsStatus: string;
+  imagesList?: FileWithPath[];
+}
+
+export interface UpdateNewsProps {
   newsTitle: string;
   newsContent: string;
   newsContentEn: string;

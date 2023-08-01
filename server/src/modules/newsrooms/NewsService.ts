@@ -117,11 +117,22 @@ export const getNewsDetailByPkey = async ({ pkey }: any) => {
   // Log the total rows and page count
   logger.info(`Result code: ${resultCode} and Errmsg: ${errMsg}`);
 
+  const attachment = result.recordsets[3];
+
+  const mappedAttachment = attachment.map((item: any) => {
+    const base64String = Buffer.from(item.imageString, 'binary').toString('base64');
+
+    return {
+      ...item,
+      base64String,
+    };
+  });
+
   const news = {
     newsContent: result.recordsets[0],
     info: result.recordsets[1],
     relatedNews: result.recordsets[2],
-    images: result.recordsets[3],
+    images: mappedAttachment,
   };
 
   // Return the recordset for a single statement and do some data transformation
@@ -237,6 +248,20 @@ export const updateNews = async ({
   request.input('newsStatus', sqlNVarChar, newsStatus);
   request.input('lockCounter', sqlInt, lockCounter);
 
+  if (imagesList) {
+    const imagesListWithKey = imagesList.map((img: ImageProps) => {
+      if (!img.imageKey) {
+        return {
+          ...img,
+          imageKey: uuidv4(),
+        };
+      }
+
+      return img;
+    });
+    request.input('imagesList', sqlNVarChar, JSON.stringify(imagesListWithKey));
+  }
+
   // Set the output parameters
   request.output('resultCode', sqlInt);
   request.output('errMsg', sqlNVarChar);
@@ -261,6 +286,13 @@ export const updateNews = async ({
   // Execute the stored procedure
   const result = await request.execute('dbo.p_newsroom_updateCustomNewsroom');
 
+  const news = {
+    newsContent: result.recordsets[0],
+    info: result.recordsets[1],
+    relatedNews: result.recordsets[2],
+    images: result.recordsets[3],
+  };
+
   // Get the resultCode and errMsg
   const resultCode = result.output.resultCode;
   const errMsg = result.output.errMsg;
@@ -270,7 +302,7 @@ export const updateNews = async ({
 
   // Return the recordset for a single statement and do some data transformation
   return {
-    result: result,
+    result: news,
     resultCode: resultCode ?? 0,
     errMsg: errMsg ?? '',
   };

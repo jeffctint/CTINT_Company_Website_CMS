@@ -8,14 +8,33 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useState, cache, use, useEffect } from "react";
 import { FileWithPath } from "@mantine/dropzone";
-import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { DetailPkeyProps } from "@/types";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { DetailPkeyProps, UpdateNewsProps } from "@/types";
 import { Button } from "@app/components/ui/button";
 import dayjs from "dayjs";
 
 const getNewsDetailByPkey = (pkey: string) => {
   const res = fetch(`http://localhost:10443/v1/newsrooms/${pkey}`, {
     method: "GET",
+    mode: "cors",
+    cache: "no-store",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json());
+
+  return res;
+};
+
+const updateNews = async (data: UpdateNewsProps) => {
+  const res = await fetch(`http://localhost:10443/v1/newsrooms/updateNews`, {
+    method: "PUT",
     mode: "cors",
     cache: "no-store",
     credentials: "same-origin",
@@ -63,6 +82,19 @@ const newsSchema = news.required({
   status: true,
 });
 
+const convertToBase64 = (file: any) => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = () => {
+      resolve(fileReader.result);
+    };
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+  });
+};
+
 // component here
 
 const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
@@ -80,6 +112,15 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     queryFn: async () => await getNewsDetailByPkey(pkey),
   });
 
+  const updateNewsMutation = useMutation({
+    mutationFn: updateNews,
+    onSuccess: (res) => {
+      if (res.errMsg === "" && res.isSuccess) {
+        router.push("/newsrooms");
+      }
+    },
+  });
+
   console.log("pkey", pkey, newsDetailQuery);
   console.log("detailQuery", detailQuery);
 
@@ -87,67 +128,79 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const info = newsDetailQuery?.data?.data?.info;
   const images = newsDetailQuery?.data?.data?.images;
 
-  // useEffect(() => {
-  //   if (newsDetailQuery.isFetched) {
-  //     setDetailQuery({
-  //       detail: newsDetailQuery?.data?.data?.newsContent[0],
-  //       info: newsDetailQuery?.data?.data?.info,
-  //       images: newsDetailQuery?.data?.data?.images,
-  //     });
-  //   }
-  // }, [newsDetailQuery.status]);
+  useEffect(() => {
+    if (newsDetailQuery.isFetched) {
+      setDetailQuery({
+        // detail: newsDetailQuery?.data?.data?.newsContent[0],
+        info: newsDetailQuery?.data?.data?.info,
+        // images: newsDetailQuery?.data?.data?.images,
+      });
+    }
+  }, [newsDetailQuery.status]);
 
   const onFinishHandler = async (values: any) => {
-    // const customResource = values.info.map((item: any) => {
-    //   return {
-    //     ...item,
-    //     referenceCode: "ALL",
-    //     referenceType: "NEWSROOM",
-    //   };
-    // });
+    const customResource = values.info.map((item: any) => {
+      return {
+        ...item,
+        referenceCode: "ALL",
+        referenceType: "NEWSROOM",
+      };
+    });
 
-    // const customImages = files.map((image: any) => {
-    //   return {
-    //     ...image,
-    //     path: image.path,
-    //     name: image.name,
-    //   };
-    // });
+    const customImages = files.map(async (image: any) => {
+      if (!image.imageString) {
+        const resultString = await convertToBase64(image);
 
-    // const body = {
-    //   newsTitle: values.newsTitle,
-    //   newsContent: values.newsContentEn,
-    //   newsContentEn: values.newsContentEn,
-    //   newsContentHk: values.newsContentHk,
-    //   newsContentJp: values.newsContentJp,
-    //   newsContentCn: values.newsContentCn,
-    //   newsDate: values.newsDate,
-    //   resourceList: customResource ?? [],
-    //   imagePath: files[0].path ?? "",
-    //   // relatedNewsList: null,
-    //   createUserPkey: "Jeff",
-    //   newsStatus: values.status,
-    //   imagesList: customImages,
-    // };
-    console.log("values", values);
+        return {
+          ...image,
+          path: image.path,
+          name: image.name,
+          imageString: resultString,
+        };
+      }
+      return image;
+    });
 
-    // try {
-    //   // createNewsMutation.mutate(body);
-    // } catch (err) {
-    //   console.error(err);
-    // }
+    const body = {
+      newsTitle: values.newsTitle,
+      newsContent: values.newsContentEn,
+      newsContentEn: values.newsContentEn,
+      newsContentHk: values.newsContentHk,
+      newsContentJp: values.newsContentJp,
+      newsContentCn: values.newsContentCn,
+      newsDate: values.newsDate,
+      resourceList: customResource ?? [],
+      imagePath: files.length !== 0 ? files?.[0].path : "",
+      // relatedNewsList: null,
+      createUserPkey: "Jeff",
+      newsStatus: values.status,
+      imagesList: await Promise.all(customImages),
+      lockCounter: detail.lockCounter ?? 0,
+    };
+    console.log("values555555", body);
+
+    try {
+      updateNewsMutation.mutate(body);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleUpload = (data: any) => {
-    setFiles(data);
+    setFiles([...files, ...data]);
   };
+  console.log("files", files);
 
-  const infoFields = info?.map((item: any, index: number) => {
+  const infoFields = detailQuery?.info?.map((item: any, index: number) => {
     return {
       name: item.name,
       website: item.website,
     };
   });
+
+  const removeImages = (index: number) => {
+    setFiles(files.filter((item, i) => i !== index));
+  };
 
   console.log("infoFields", infoFields);
 
@@ -159,12 +212,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
       // newsContentEn: "",
       // newsContentHk: "",
       // status: "ACTIVE",
-      info: [
-        {
-          name: "",
-          website: "",
-        },
-      ],
+      info: [],
     },
   });
 
@@ -193,9 +241,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
       <div className="flex flex-col p-8 w-1/2 max-w-[800px] min-h-full">
         <div className="flex flex-row items-center space-x-4 border-b-[1px] border-[#454e5f] pb-4 mb-4">
           <h1 className="font-bold text-4xl text-white">News Detail</h1>
-          <span className="text-md text-white">
-            News code: {detailQuery.detail?.code}
-          </span>
+          <span className="text-md text-white">News code: {detail?.code}</span>
         </div>
         <NewsDetailForm
           type="Edit"
@@ -209,11 +255,13 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
           remove={remove}
           files={files}
           handleUpload={handleUpload}
+          setFiles={setFiles}
           isLoading={false}
           newsDetail={detail}
           info={info}
           images={images}
           isEdit={isEdit}
+          removeImages={removeImages}
         />
       </div>
     </div>

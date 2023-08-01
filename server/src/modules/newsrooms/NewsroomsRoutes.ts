@@ -17,6 +17,6 @@ router.route('/createNews').post(createNewsroom);
 router.route('/updateNews').put(updateNews);
 
 // Delete News
-router.route('/deleteNews').put(updateNews);
+router.route('/deleteNews').delete(updateNews);
 
 export { router };
