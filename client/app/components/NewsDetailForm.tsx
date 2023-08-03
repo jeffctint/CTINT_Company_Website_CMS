@@ -86,11 +86,11 @@ const NewsDetailForm = ({
   // };
 
   useEffect(() => {
-    form.setValue("newsTitle", newsDetail.newsTitle);
-    form.setValue("newsDate", new Date(newsDetail.newsDate));
-    form.setValue("newsContentEn", newsDetail.newsContentEn);
-    form.setValue("newsContentHk", newsDetail.newsContentHk);
-    form.setValue("status", newsDetail.status);
+    form.setValue("newsTitle", newsDetail?.newsTitle);
+    form.setValue("newsDate", new Date(newsDetail?.newsDate));
+    form.setValue("newsContentEn", newsDetail?.newsContentEn);
+    form.setValue("newsContentHk", newsDetail?.newsContentHk);
+    form.setValue("status", newsDetail?.status);
 
     if (info) {
       form.setValue("info", info); // very important

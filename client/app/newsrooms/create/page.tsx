@@ -200,7 +200,7 @@ const CreateNews = () => {
     console.log("body", body);
 
     try {
-      console.log(body);
+      console.log("create body", body);
       createNewsMutation.mutate(body);
     } catch (err) {
       console.error(err);

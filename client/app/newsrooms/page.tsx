@@ -11,7 +11,9 @@ const getNewsList = async () => {
     headers: {
       "Content-Type": "application/json",
     },
-    // next: { revalidate: 5 },
+    next: {
+      tags: ["newsList"],
+    },
   }).then((res) => res.json());
 
   return res;

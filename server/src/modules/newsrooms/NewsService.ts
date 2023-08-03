@@ -44,6 +44,7 @@ interface DeleteProps {
 }
 
 interface ImageProps {
+  imageString: string;
   path: string;
   name: string;
   imageKey: string;
@@ -79,6 +80,7 @@ export const getNewsList = async ({}): Promise<any> => {
     images: result.recordsets[2],
   };
 
+  console.log('news', news.newsContent.length);
   // Return the recordset for a single statement and do some data transformation
   return {
     list: news,
@@ -169,14 +171,15 @@ export const createNews = async ({
   request.input('createUserPkey', sqlNVarChar, createUserPkey);
   request.input('imagePath', sqlNVarChar, imagePath);
 
+  let imagesListWithKey: any = [];
   if (imagesList) {
-    const imagesListWithKey = imagesList.map((img: ImageProps) => {
+    imagesListWithKey = imagesList.map((img: ImageProps) => {
       return {
         ...img,
         imageKey: uuidv4(),
       };
     });
-    request.input('imagesList', sqlNVarChar, JSON.stringify(imagesListWithKey));
+    // request.input('imagesList', sqlNVarChar, JSON.stringify(imagesListWithKey));
   }
 
   // Set the output parameters
@@ -206,9 +209,37 @@ export const createNews = async ({
   // Execute the stored procedure
   const result = await request.execute('dbo.p_newsroom_createCustomNewsroom');
 
+  let imageResult;
+  if (imagesListWithKey) {
+    for (let i = 0; i < imagesListWithKey.length; i++) {
+      const imgItem = imagesListWithKey[i];
+      const request = await sqlRequest();
+
+      const name = imgItem.name;
+      const path = imgItem.path;
+      const imageString = imgItem.imageString;
+      const imageKey = imgItem.imageKey;
+
+      request.input('name', sqlNVarChar, name);
+      request.input('path', sqlNVarChar, path);
+      request.input('imageString', sqlNVarChar, imageString);
+      request.input('imageKey', sqlNVarChar, imageKey);
+
+      // Set the output parameters
+      request.output('imgResultCode', sqlInt);
+      request.output('imgErrMsg', sqlNVarChar);
+
+      console.log('times', i);
+      console.log('imageResult', imageResult);
+      imageResult = await request.execute('dbo.p_newsroom_createCustomImageForNewsroom');
+    }
+  }
+
   // Get the resultCode and errMsg
   const resultCode = result.output.resultCode;
   const errMsg = result.output.errMsg;
+  const imgResultCode = imageResult.output.imgResultCode;
+  const imgErrMsg = imageResult.output.imgErrMsg;
 
   // Log the total rows and page count
   logger.info(`Result code: ${resultCode} and Errmsg: ${errMsg}`);
@@ -217,7 +248,7 @@ export const createNews = async ({
     newsContent: result.recordsets[0],
     info: result.recordsets[1],
     relatedNews: result.recordsets[2],
-    images: result.recordsets[3],
+    images: imageResult,
   };
 
   console.log(news);
@@ -226,6 +257,8 @@ export const createNews = async ({
     result: news,
     resultCode: resultCode ?? 0,
     errMsg: errMsg ?? '',
+    imgResultCode: imgResultCode ?? 0,
+    imgErrMsg: imgErrMsg ?? '',
   };
 };
 
@@ -233,6 +266,8 @@ export const updateNews = async ({
   pkey,
   newsTitle,
   newsContentEn,
+  newsContentHk,
+  resourceList,
   newsDate,
   newsStatus,
   imagesList,
@@ -244,8 +279,10 @@ export const updateNews = async ({
   request.input('pkey', sqlNVarChar, pkey);
   request.input('newsTitle', sqlNVarChar, newsTitle);
   request.input('newsContentEn', sqlNVarChar, newsContentEn);
+  request.input('newsContentHk', sqlNVarChar, newsContentHk);
   request.input('newsDate', sqlDatetime, newsDate);
   request.input('newsStatus', sqlNVarChar, newsStatus);
+  request.input('resourceList', sqlNVarChar, JSON.stringify(resourceList));
   request.input('lockCounter', sqlInt, lockCounter);
 
   if (imagesList) {
@@ -276,6 +313,7 @@ export const updateNews = async ({
       newsDate,
       newsStatus,
       lockCounter,
+      imagesList,
     },
     inputParameters: request.parameters,
   };

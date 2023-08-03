@@ -57,6 +57,7 @@ const CreateNewsForm = ({
 
   const previews = files.map((file: any, index: number) => {
     const imageUrl = URL.createObjectURL(file);
+
     return (
       <Image
         width={"100%"}

@@ -17,6 +17,7 @@ import {
 import { DetailPkeyProps, UpdateNewsProps } from "@/types";
 import { Button } from "@app/components/ui/button";
 import dayjs from "dayjs";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 const getNewsDetailByPkey = (pkey: string) => {
   const res = fetch(`http://localhost:10443/v1/newsrooms/${pkey}`, {
@@ -41,6 +42,7 @@ const updateNews = async (data: UpdateNewsProps) => {
     headers: {
       "Content-Type": "application/json",
     },
+    body: JSON.stringify(data),
   }).then((res) => res.json());
 
   return res;
@@ -110,19 +112,24 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const newsDetailQuery = useQuery({
     queryKey: ["detail", pkey],
     queryFn: async () => await getNewsDetailByPkey(pkey),
+    cacheTime: 100,
   });
+
+  console.log("newsDetailQuery", newsDetailQuery);
 
   const updateNewsMutation = useMutation({
     mutationFn: updateNews,
     onSuccess: (res) => {
       if (res.errMsg === "" && res.isSuccess) {
+        revalidateTag("newsList");
         router.push("/newsrooms");
       }
     },
+    onError: (error, variables, context) => {
+      // An error happened!
+      console.log("error", error, "variables", variables, "context", context);
+    },
   });
-
-  console.log("pkey", pkey, newsDetailQuery);
-  console.log("detailQuery", detailQuery);
 
   const detail = newsDetailQuery?.data?.data?.newsContent[0]; // fetched data
   const info = newsDetailQuery?.data?.data?.info;
@@ -162,6 +169,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     });
 
     const body = {
+      pkey: detail.pkey,
       newsTitle: values.newsTitle,
       newsContent: values.newsContentEn,
       newsContentEn: values.newsContentEn,
@@ -172,15 +180,14 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
       resourceList: customResource ?? [],
       imagePath: files.length !== 0 ? files?.[0].path : "",
       // relatedNewsList: null,
-      createUserPkey: "Jeff",
       newsStatus: values.status,
       imagesList: await Promise.all(customImages),
       lockCounter: detail.lockCounter ?? 0,
     };
-    console.log("values555555", body);
 
     try {
       updateNewsMutation.mutate(body);
+      console.log("values555555", body);
     } catch (err) {
       console.error(err);
     }
@@ -189,7 +196,6 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const handleUpload = (data: any) => {
     setFiles([...files, ...data]);
   };
-  console.log("files", files);
 
   const infoFields = detailQuery?.info?.map((item: any, index: number) => {
     return {
@@ -201,8 +207,6 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const removeImages = (index: number) => {
     setFiles(files.filter((item, i) => i !== index));
   };
-
-  console.log("infoFields", infoFields);
 
   const form = useForm<z.infer<typeof newsSchema>>({
     resolver: zodResolver(newsSchema),
@@ -217,7 +221,6 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   });
 
   const { control, register, handleSubmit, watch } = form;
-  console.log(33333, watch("newsTitle"));
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -227,8 +230,6 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   if (newsDetailQuery.isFetching) {
     return <div>Loading ...</div>;
   }
-
-  // console.log(77777, detailQuery.detail.newsTitle);
 
   return (
     <div className="flex w-full h-[1000px] justify-center overflow-auto relative">

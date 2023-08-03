@@ -1,6 +1,5 @@
 import express from 'express';
-import { createNewsroom, findAllNews, findNewsByPkey, deleteNewsroom } from './NewsController';
-import { updateNews } from './NewsService';
+import { createNewsroom, findAllNews, findNewsByPkey, deleteNewsroom, updateNewsroom } from './NewsController';
 
 const router = express.Router();
 
@@ -14,9 +13,9 @@ router.route('/:pkey').get(findNewsByPkey);
 router.route('/createNews').post(createNewsroom);
 
 // Update News
-router.route('/updateNews').put(updateNews);
+router.route('/updateNews').put(updateNewsroom);
 
 // Delete News
-router.route('/deleteNews').delete(updateNews);
+router.route('/deleteNews').delete(deleteNewsroom);
 
 export { router };
