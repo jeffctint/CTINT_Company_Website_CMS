@@ -16,6 +16,7 @@ import {
 } from "@tanstack/react-query";
 import { DetailPkeyProps, UpdateNewsProps } from "@/types";
 import { Button } from "@app/components/ui/button";
+import { Skeleton } from "@app/components/ui/skeleton";
 import dayjs from "dayjs";
 import { revalidatePath, revalidateTag } from "next/cache";
 
@@ -234,7 +235,13 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   });
 
   if (newsDetailQuery.isFetching) {
-    return <div>Loading ...</div>;
+    return (
+      <div className="flex flex-row space-x-4 justify-center items-center w-full h-screen">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <Skeleton className="h-10 w-10 rounded-full" />
+      </div>
+    );
   }
 
   return (

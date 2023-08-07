@@ -6,15 +6,15 @@ import Image from "next/image";
 import Link from "next/link";
 
 const NewsCard = ({ imagePath, newsTitle, newsDate, pkey }: NewsCardProps) => {
-  // const imageUrl = URL.createObjectURL(imagePath);
   return (
     <Link href={`/newsrooms/${pkey}`}>
-      <Card className="border-none overflow-clip bg-[#181f25] cursor-pointer">
-        <CardContent className="p-0 rounded-lg">
+      <Card className="border-none overflow-clip bg-[#181f25] cursor-pointer max-h-[320px]">
+        <CardContent className="p-0 rounded-lg h-[160px] relative">
           <Image
-            width={380}
-            height={320}
-            src={imagePath ?? "/images/logo.png"}
+            // width={380}
+            // height={163}
+            fill
+            src={imagePath ? imagePath : "/images/logo.png"}
             alt={newsTitle}
           />
         </CardContent>
