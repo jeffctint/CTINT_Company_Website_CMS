@@ -1,15 +1,50 @@
 import { NewsCardProps } from "@/types";
 import { Card, CardContent, CardFooter } from "@app/components/ui/card";
+import { Badge } from "@app/components/ui/badge";
 
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 
-const NewsCard = ({ imagePath, newsTitle, newsDate, pkey }: NewsCardProps) => {
+const badgeStatus = [
+  { ACTIVE: "#97F64D" },
+  { INACTIVE: "#F54F4C" },
+  { DRAFT: "#FEFEF6" },
+];
+
+const NewsCard = ({
+  imagePath,
+  newsTitle,
+  newsDate,
+  pkey,
+  status,
+}: NewsCardProps) => {
+  let bgColor = "";
+  switch (status) {
+    case "ACTIVE":
+      bgColor = "bg-[#97F64D]";
+      break;
+    case "INACTIVE":
+      bgColor = "bg-[#F54F4C]";
+      break;
+    case "DRAFT":
+      bgColor = "bg-[#707A8F]";
+      break;
+
+    default:
+      break;
+  }
+
   return (
     <Link href={`/newsrooms/${pkey}`}>
       <Card className="border-none overflow-clip bg-[#181f25] cursor-pointer max-h-[320px]">
         <CardContent className="p-0 rounded-lg h-[160px] relative">
+          <Badge
+            className={`absolute z-10 top-2 right-2 ${bgColor} flex justify-center items-center pt-1`}
+          >
+            {status}
+          </Badge>
+
           <Image
             // width={380}
             // height={163}

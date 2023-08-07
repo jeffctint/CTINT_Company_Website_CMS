@@ -30,12 +30,13 @@ const Newsrooms = async () => {
       </div>
       <div className="p-4 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {news.data.newsContent.map(
-          ({ newsTitle, newsDate, pkey, imagePath }: NewsProps) => (
+          ({ newsTitle, newsDate, pkey, imagePath, status }: NewsProps) => (
             <NewsCard
               imagePath={imagePath[0]?.imageString ?? ""}
               newsTitle={newsTitle}
               newsDate={newsDate}
               pkey={pkey}
+              status={status}
             />
           )
         )}

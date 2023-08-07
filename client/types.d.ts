@@ -15,6 +15,7 @@ export interface NewsProps {
   status: string;
   statusDesc: string;
   imagePath: any[];
+  status: string;
 }
 
 export interface NewsCardProps {
@@ -22,6 +23,7 @@ export interface NewsCardProps {
   newsTitle: string;
   newsDate: string;
   pkey: string;
+  status: string;
 }
 
 export interface CreateNewsFormProps {
