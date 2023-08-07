@@ -154,9 +154,6 @@ const NewsDetailForm = ({
     const blob = new Blob([buffer], { type: item.MimeType });
     const imageUrl = URL.createObjectURL(blob);
 
-    // const imageUrl = URL.createObjectURL(item.imageString);
-    console.log(" fetched imageUrl", imageUrl);
-
     return (
       <Image
         width={"100%"}
