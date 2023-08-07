@@ -75,9 +75,16 @@ export const getNewsList = async ({}): Promise<any> => {
   logger.info(`Result code: ${resultCode} and Errmsg: ${errMsg}`);
 
   const news = {
-    newsContent: result.recordsets[0],
-    info: result.recordsets[1],
-    images: result.recordsets[2],
+    newsContent: result.recordsets[0].map((item: any) => {
+      const images = result.recordsets[2].filter((img: any) => img.newsroomCode === item.code);
+      return {
+        ...item,
+        id: item.code,
+        imagePath: images ?? [],
+      };
+    }),
+    // info: result.recordsets[1],
+    // images: result.recordsets[2],
   };
 
   console.log('news', news.newsContent.length);
@@ -285,8 +292,10 @@ export const updateNews = async ({
   request.input('resourceList', sqlNVarChar, JSON.stringify(resourceList));
   request.input('lockCounter', sqlInt, lockCounter);
 
+  let imagesListWithKey: any = [];
+
   if (imagesList) {
-    const imagesListWithKey = imagesList.map((img: ImageProps) => {
+    imagesListWithKey = imagesList.map((img: ImageProps) => {
       if (!img.imageKey) {
         return {
           ...img,

@@ -121,6 +121,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     mutationFn: updateNews,
     onSuccess: (res) => {
       if (res.errMsg === "" && res.isSuccess) {
+        console.log("success?");
         revalidateTag("newsList");
         router.push("/newsrooms");
       }
@@ -163,9 +164,13 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
           path: image.path,
           name: image.name,
           imageString: resultString,
+          existed: 1,
         };
       }
-      return image;
+      return {
+        ...image,
+        existed: 1,
+      };
     });
 
     const body = {
@@ -187,6 +192,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
 
     try {
       updateNewsMutation.mutate(body);
+
       console.log("values555555", body);
     } catch (err) {
       console.error(err);
@@ -257,7 +263,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
           files={files}
           handleUpload={handleUpload}
           setFiles={setFiles}
-          isLoading={false}
+          isLoading={updateNewsMutation.isLoading}
           newsDetail={detail}
           info={info}
           images={images}

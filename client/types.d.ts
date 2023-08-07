@@ -14,7 +14,7 @@ export interface NewsProps {
   serviceAgreementTypeDesc: string;
   status: string;
   statusDesc: string;
-  imagePath: string;
+  imagePath: any[];
 }
 
 export interface NewsCardProps {

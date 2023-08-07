@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const NewsCard = ({ imagePath, newsTitle, newsDate, pkey }: NewsCardProps) => {
+  // const imageUrl = URL.createObjectURL(imagePath);
   return (
     <Link href={`/newsrooms/${pkey}`}>
       <Card className="border-none overflow-clip bg-[#181f25] cursor-pointer">
@@ -13,7 +14,7 @@ const NewsCard = ({ imagePath, newsTitle, newsDate, pkey }: NewsCardProps) => {
           <Image
             width={380}
             height={320}
-            src={`https://ctint-website.azurewebsites.net/newsroom/${imagePath}`}
+            src={imagePath ?? "/images/logo.png"}
             alt={newsTitle}
           />
         </CardContent>
