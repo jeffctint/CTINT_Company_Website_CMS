@@ -4,11 +4,16 @@ import { DocsRoute } from './DocsRoute';
 import { InteractionRoute } from '@modules/interaction';
 import { HealthCheckRoute } from '@modules/healthcheck';
 import { NewsroomsRoute } from '@/modules/newsrooms';
+import { LoginRoute } from '@/modules/login';
 
 const router = express.Router();
 
 // Add routes here
 const defaultRoutes = [
+  {
+    path: '/login',
+    route: LoginRoute,
+  },
   {
     path: '/newsrooms',
     route: NewsroomsRoute,
