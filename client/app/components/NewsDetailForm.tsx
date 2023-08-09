@@ -142,7 +142,7 @@ const NewsDetailForm = ({
         <Image
           width={"100%"}
           height={80}
-          fit="contain"
+          fit="cover"
           key={index}
           src={imageUrl}
           imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
@@ -158,7 +158,7 @@ const NewsDetailForm = ({
       <Image
         width={"100%"}
         height={80}
-        fit="contain"
+        fit="cover"
         key={index}
         src={imageUrl}
         imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
@@ -300,6 +300,10 @@ const NewsDetailForm = ({
             accept={IMAGE_MIME_TYPE}
             maxSize={10 * 1024 ** 2}
             multiple={true}
+            disabled={!isEdit}
+            className={`${
+              isEdit ? `` : `bg-[#a9b3c6] cursor-not-allowed hover:bg-[#a9b3c6]`
+            }`}
           >
             <div style={{ pointerEvents: "none" }}>
               <Group position="center">
@@ -346,10 +350,9 @@ const NewsDetailForm = ({
               <div key={i} className="w-full relative">
                 <span
                   onClick={() => removeImages(i)}
-                  className="absolute right-0 top-1 flex items-center justify-center w-6 h-6 rounded-full text-
-                  [#f9f9fb] hover:bg-[#a9b3c6] z-10 cursor-pointer"
+                  className="absolute right-0 top-1 flex items-center justify-center w-6 h-6 rounded-full  hover:bg-[#a9b3c6] z-10 cursor-pointer"
                 >
-                  <RiDeleteBinLine />
+                  <RiDeleteBinLine className="text-[#ffffff]" />
                 </span>
                 {img}
               </div>

@@ -122,7 +122,6 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     mutationFn: updateNews,
     onSuccess: (res) => {
       if (res.errMsg === "" && res.isSuccess) {
-        console.log("success?");
         revalidateTag("newsList");
         router.push("/newsrooms");
       }
