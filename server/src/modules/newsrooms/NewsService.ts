@@ -158,7 +158,7 @@ export const createNews = async ({
   newsContentHk,
   newsDate,
   resourceList,
-  //   relatedNewsList,
+  relatedNewsList,
   newsStatus,
   createUserPkey,
   imagesList,
@@ -173,7 +173,7 @@ export const createNews = async ({
 
   request.input('newsDate', sqlDatetime, newsDate);
   request.input('resourceList', sqlNVarChar, JSON.stringify(resourceList));
-  //   request.input('relatedNewsList', sqlNVarChar, relatedNewsList);
+  request.input('relatedNewsList', sqlNVarChar, JSON.stringify(relatedNewsList));
   request.input('newsStatus', sqlNVarChar, newsStatus);
   request.input('createUserPkey', sqlNVarChar, createUserPkey);
   request.input('imagePath', sqlNVarChar, imagePath);
@@ -202,7 +202,7 @@ export const createNews = async ({
       newsContentHk,
       newsDate,
       resourceList,
-      //   relatedNewsList,
+      relatedNewsList,
       newsStatus,
       createUserPkey,
       imagesList,

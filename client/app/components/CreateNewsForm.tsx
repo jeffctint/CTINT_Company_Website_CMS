@@ -1,6 +1,6 @@
 "use client";
 import { useRef } from "react";
-import { CreateNewsFormProps } from "@/types";
+import { CreateNewsFormProps, NewsProps } from "@/types";
 import TextEditor from "@app/components/TextEditor";
 import { MdOutlineDateRange } from "react-icons/md";
 import { IconCloudUpload, IconDownload, IconX } from "@tabler/icons-react";
@@ -38,23 +38,51 @@ import {
   rem,
 } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { useQuery } from "@tanstack/react-query";
+
+const getNewsList = async () => {
+  const res = await fetch("http://localhost:10443/v1/newsrooms", {
+    method: "POST",
+    mode: "cors",
+    cache: "force-cache",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    // next: {
+    //   tags: ["newsList"],
+    // },
+  }).then((res) => res.json());
+
+  return res;
+};
 
 const CreateNewsForm = ({
-  type,
   handleSubmit,
   onFinishHandler,
   form,
   control,
   register,
-  fields,
-  append,
-  remove,
+  infoFields,
+  infoAppend,
+  infoRemove,
+  relatedNewsFields,
+  relatedNewsAppend,
+  relatedNewsRemove,
   files,
   handleUpload,
   isLoading,
 }: CreateNewsFormProps) => {
   const openRef = useRef<() => void>(null);
 
+  const newsListQuery = useQuery({
+    queryKey: ["list"],
+    queryFn: async () => await getNewsList(),
+    cacheTime: 100,
+  });
+
+  const newsList = newsListQuery?.data?.data?.newsContent;
+  console.log("newsList", newsList);
   const previews = files.map((file: any, index: number) => {
     const imageUrl = URL.createObjectURL(file);
 
@@ -236,8 +264,7 @@ const CreateNewsForm = ({
             <Button
               type="button"
               onClick={() => {
-                console.log("append", append());
-                append({ name: "", website: "" });
+                infoAppend({ name: "", website: "" });
               }}
               className="bg-transparent border-[#97f64d] border-[1px] text-[#97f64d]"
             >
@@ -245,7 +272,7 @@ const CreateNewsForm = ({
             </Button>
           </FormLabel>
           <ul>
-            {fields.map((item: any, index: number) => {
+            {infoFields.map((item: any, index: number) => {
               return (
                 <FormField
                   key={item.id}
@@ -271,7 +298,66 @@ const CreateNewsForm = ({
                       </FormItem>
                       <Button
                         className="bg-[#97f64d] text-[#181f25] hover:bg-[#97f64d]"
-                        onClick={() => remove(index)}
+                        onClick={() => infoRemove(index)}
+                      >
+                        Delete
+                      </Button>
+                    </li>
+                  )}
+                />
+              );
+            })}
+          </ul>
+        </FormItem>
+
+        <FormItem id="relatedNews">
+          <FormLabel className="flex flex-row justify-between items-center">
+            <div className="text-[#a9b3c6]">Related News</div>
+            <Button
+              type="button"
+              onClick={() => {
+                relatedNewsAppend({ referenceCode: "" });
+              }}
+              className="bg-transparent border-[#97f64d] border-[1px] text-[#97f64d]"
+            >
+              Add News
+            </Button>
+          </FormLabel>
+          <ul>
+            {relatedNewsFields.map((item: any, index: number) => {
+              return (
+                <FormField
+                  key={item.id}
+                  control={form.control}
+                  name={`relatedNews.${index}.referenceCode`}
+                  render={({ field }) => (
+                    <li className="flex flex-row space-x-3 justify-between items-end py-4 2xl:w-3/5">
+                      <FormItem>
+                        <FormLabel className="text-[#a9b3c6]">Code</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="text-white bg-transparent border-[#454e5f] w-80">
+                              <SelectValue placeholder="Select related news" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="h-72">
+                            {newsList?.map((news: NewsProps) => (
+                              <SelectItem key={news.code} value={news.code}>
+                                {news.newsTitle}
+                                {"  |  "}
+                                {dayjs(news.newsDate).format("YYYY/MM/DD")}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+
+                      <Button
+                        className="bg-[#97f64d] text-[#181f25] hover:bg-[#97f64d]"
+                        onClick={() => relatedNewsRemove(index)}
                       >
                         Delete
                       </Button>

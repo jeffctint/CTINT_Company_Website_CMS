@@ -19,10 +19,15 @@ import Link from "next/link";
 import { CreateNewsProps } from "@/types";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 
 const infoSchema = z.object({
   name: z.string(),
   website: z.string(),
+});
+
+const relatedNewsSchema = z.object({
+  referenceCode: z.string(),
 });
 
 const imgSchema = z.object({
@@ -44,6 +49,7 @@ const news = z
     newsContentJp: z.string(),
     newsContentCn: z.string(),
     info: z.array(infoSchema),
+    relatedNews: z.array(relatedNewsSchema),
     status: z.string(),
     imgUrls: z.array(imgSchema),
   })
@@ -109,7 +115,7 @@ const createNews = async (data: CreateNewsProps) => {
 };
 
 const CreateNews = () => {
-  // const [title, setTitle] = useState("");
+  const { data: session } = useSession();
 
   const createNewsMutation = useMutation({
     mutationFn: createNews,
@@ -132,9 +138,22 @@ const CreateNews = () => {
 
   const { control, register, handleSubmit, watch } = form;
   console.log(watch("newsDate"));
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: infoFields,
+    append: infoAppend,
+    remove: infoRemove,
+  } = useFieldArray({
     control,
     name: "info",
+  });
+
+  const {
+    fields: relatedNewsFields,
+    append: relatedNewsAppend,
+    remove: relatedNewsRemove,
+  } = useFieldArray({
+    control,
+    name: "relatedNews",
   });
 
   // const watchNewsTitle = useWatch({ control, name: "newsTitle" });
@@ -190,18 +209,15 @@ const CreateNews = () => {
       newsDate: values.newsDate,
       resourceList: customResource ?? [],
       imagePath: files.length !== 0 ? files?.[0].path : "",
-      // relatedNewsList: null,
-      createUserPkey: "Jeff",
+      relatedNewsList: values.relatedNews,
+      createUserPkey: session?.user?.name,
       newsStatus: values.status,
       imagesList: await Promise.all(customImages),
     };
 
-    console.log("customImages", customImages);
-    console.log("body", body);
-
     try {
-      console.log("create body", body);
-      createNewsMutation.mutate(body);
+      console.log("body", body);
+      // createNewsMutation.mutate(body);
     } catch (err) {
       console.error(err);
     }
@@ -224,9 +240,12 @@ const CreateNews = () => {
           form={form}
           control={control}
           register={register}
-          fields={fields}
-          append={append}
-          remove={remove}
+          infoFields={infoFields}
+          infoAppend={infoAppend}
+          infoRemove={infoRemove}
+          relatedNewsFields={relatedNewsFields}
+          relatedNewsAppend={relatedNewsAppend}
+          relatedNewsRemove={relatedNewsRemove}
           files={files}
           handleUpload={handleUpload}
           isLoading={createNewsMutation.isLoading}

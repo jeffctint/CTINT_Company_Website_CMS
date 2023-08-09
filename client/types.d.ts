@@ -35,9 +35,12 @@ export interface CreateNewsFormProps {
   form: any;
   control: Control;
   register: UseFormRegister;
-  fields: UseFieldArrayProps;
-  append: UseFieldArrayAppend;
-  remove: UseFieldArrayRemove;
+  infoFields: UseFieldArrayProps;
+  infoAppend: UseFieldArrayAppend;
+  infoRemove: UseFieldArrayRemove;
+  relatedNewsFields: UseFieldArrayProps;
+  relatedNewsAppend: UseFieldArrayAppend;
+  relatedNewsRemove: UseFieldArrayRemove;
   files: any;
   handleUpload: (data: any) => void;
   isLoading: boolean;
