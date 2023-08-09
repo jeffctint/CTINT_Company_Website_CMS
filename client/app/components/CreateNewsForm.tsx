@@ -39,6 +39,7 @@ import {
 } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useQuery } from "@tanstack/react-query";
+import { RiDeleteBinLine } from "react-icons/ri";
 
 const getNewsList = async () => {
   const res = await fetch("http://localhost:10443/v1/newsrooms", {
@@ -49,9 +50,6 @@ const getNewsList = async () => {
     headers: {
       "Content-Type": "application/json",
     },
-    // next: {
-    //   tags: ["newsList"],
-    // },
   }).then((res) => res.json());
 
   return res;
@@ -72,6 +70,7 @@ const CreateNewsForm = ({
   files,
   handleUpload,
   isLoading,
+  removeImages,
 }: CreateNewsFormProps) => {
   const openRef = useRef<() => void>(null);
 
@@ -82,7 +81,7 @@ const CreateNewsForm = ({
   });
 
   const newsList = newsListQuery?.data?.data?.newsContent;
-  console.log("newsList", newsList);
+
   const previews = files.map((file: any, index: number) => {
     const imageUrl = URL.createObjectURL(file);
 
@@ -90,7 +89,7 @@ const CreateNewsForm = ({
       <Image
         width={"100%"}
         height={80}
-        fit="contain"
+        fit="cover"
         key={index}
         src={imageUrl}
         imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
@@ -228,7 +227,13 @@ const CreateNewsForm = ({
             mt={previews.length > 0 ? "xl" : 0}
           >
             {previews.map((img: any, i: number) => (
-              <div key={i} className="w-full">
+              <div key={i} className="w-full relative">
+                <span
+                  onClick={() => removeImages(i)}
+                  className="absolute right-0 top-1 flex items-center justify-center w-6 h-6 rounded-full  hover:bg-[#a9b3c6] z-10 cursor-pointer"
+                >
+                  <RiDeleteBinLine className="text-[#ffffff]" />
+                </span>
                 {img}
               </div>
             ))}

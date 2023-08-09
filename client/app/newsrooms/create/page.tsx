@@ -2,17 +2,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import * as z from "zod";
-import parse from "html-react-parser";
 
 import CreateNewsForm from "@app/components/CreateNewsForm";
 
 import { FileWithPath } from "@mantine/dropzone";
-import {
-  useFieldArray,
-  useForm,
-  useWatch,
-  SubmitHandler,
-} from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -20,6 +14,7 @@ import { CreateNewsProps } from "@/types";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { revalidateTag } from "next/cache";
 
 const infoSchema = z.object({
   name: z.string(),
@@ -85,20 +80,6 @@ const convertToBase64 = (file: any) => {
   });
 };
 
-// const convertToBase64 = (file: any) =>
-//   new Promise((resolve, reject) => {
-//     const fileReader = new FileReader();
-//     fileReader.readAsDataURL(file);
-//     fileReader.onload = () => {
-//       resolve(fileReader.result);
-//     };
-//     fileReader.onerror = (error) => {
-//       reject(error);
-//     };
-//   })
-//     .then((res) => console.log(res))
-//     .catch((err) => console.error(err));
-
 const createNews = async (data: CreateNewsProps) => {
   const res = await fetch("http://localhost:10443/v1/newsrooms/createNews", {
     method: "POST",
@@ -156,12 +137,6 @@ const CreateNews = () => {
     name: "relatedNews",
   });
 
-  // const watchNewsTitle = useWatch({ control, name: "newsTitle" });
-  // const watchNewsDate = useWatch({ control, name: "newsDate" });
-  // const watchNewsContentEn = useWatch({ control, name: "newsContentEn" });
-  // const watchNewsContentHk = useWatch({ control, name: "newsContentHk" });
-  // const watchInfo = useWatch({ control, name: "info" });
-
   const [files, setFiles] = useState<FileWithPath[]>([]); //upload images
 
   const previews = files.map((file: any, index: number) => {
@@ -209,22 +184,26 @@ const CreateNews = () => {
       newsDate: values.newsDate,
       resourceList: customResource ?? [],
       imagePath: files.length !== 0 ? files?.[0].path : "",
-      relatedNewsList: values.relatedNews,
-      createUserPkey: session?.user?.name,
+      relatedNewsList: values?.relatedNews,
+      createUserPkey: session?.user?.name!,
       newsStatus: values.status,
       imagesList: await Promise.all(customImages),
     };
 
     try {
       console.log("body", body);
-      // createNewsMutation.mutate(body);
+      createNewsMutation.mutate(body);
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleUpload = (data: any) => {
-    setFiles(data);
+    setFiles([...files, ...data]);
+  };
+
+  const removeImages = (index: number) => {
+    setFiles(files.filter((item, i) => i !== index));
   };
 
   return (
@@ -249,6 +228,7 @@ const CreateNews = () => {
           files={files}
           handleUpload={handleUpload}
           isLoading={createNewsMutation.isLoading}
+          removeImages={removeImages}
         />
       </div>
     </div>

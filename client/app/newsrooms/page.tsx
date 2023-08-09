@@ -6,7 +6,7 @@ const getNewsList = async () => {
   const res = await fetch("http://localhost:10443/v1/newsrooms", {
     method: "POST",
     mode: "cors",
-    cache: "force-cache",
+    cache: "no-cache",
     credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",

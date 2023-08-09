@@ -37,6 +37,7 @@ interface UpdateNewsProps {
   newsStatus: string;
   imagesList?: ImageProps[];
   lockCounter: number;
+  latestUpdateUserPkey: string;
 }
 
 interface DeleteProps {
@@ -186,7 +187,7 @@ export const createNews = async ({
         imageKey: uuidv4(),
       };
     });
-    // request.input('imagesList', sqlNVarChar, JSON.stringify(imagesListWithKey));
+    request.input('imagesList', sqlNVarChar, JSON.stringify(imagesListWithKey));
   }
 
   // Set the output parameters
@@ -216,37 +217,37 @@ export const createNews = async ({
   // Execute the stored procedure
   const result = await request.execute('dbo.p_newsroom_createCustomNewsroom');
 
-  let imageResult;
-  if (imagesListWithKey) {
-    for (let i = 0; i < imagesListWithKey.length; i++) {
-      const imgItem = imagesListWithKey[i];
-      const request = await sqlRequest();
+  // let imageResult;
+  // if (imagesListWithKey) {
+  //   for (let i = 0; i < imagesListWithKey.length; i++) {
+  //     const imgItem = imagesListWithKey[i];
+  //     const request = await sqlRequest();
 
-      const name = imgItem.name;
-      const path = imgItem.path;
-      const imageString = imgItem.imageString;
-      const imageKey = imgItem.imageKey;
+  //     const name = imgItem.name;
+  //     const path = imgItem.path;
+  //     const imageString = imgItem.imageString;
+  //     const imageKey = imgItem.imageKey;
 
-      request.input('name', sqlNVarChar, name);
-      request.input('path', sqlNVarChar, path);
-      request.input('imageString', sqlNVarChar, imageString);
-      request.input('imageKey', sqlNVarChar, imageKey);
+  //     request.input('name', sqlNVarChar, name);
+  //     request.input('path', sqlNVarChar, path);
+  //     request.input('imageString', sqlNVarChar, imageString);
+  //     request.input('imageKey', sqlNVarChar, imageKey);
 
-      // Set the output parameters
-      request.output('imgResultCode', sqlInt);
-      request.output('imgErrMsg', sqlNVarChar);
+  //     // Set the output parameters
+  //     request.output('imgResultCode', sqlInt);
+  //     request.output('imgErrMsg', sqlNVarChar);
 
-      console.log('times', i);
-      console.log('imageResult', imageResult);
-      imageResult = await request.execute('dbo.p_newsroom_createCustomImageForNewsroom');
-    }
-  }
+  //     console.log('times', i);
+  //     console.log('imageResult', imageResult);
+  //     imageResult = await request.execute('dbo.p_newsroom_createCustomImageForNewsroom');
+  //   }
+  // }
 
   // Get the resultCode and errMsg
   const resultCode = result.output.resultCode;
   const errMsg = result.output.errMsg;
-  const imgResultCode = imageResult.output.imgResultCode;
-  const imgErrMsg = imageResult.output.imgErrMsg;
+  // const imgResultCode = imageResult.output.imgResultCode;
+  // const imgErrMsg = imageResult.output.imgErrMsg;
 
   // Log the total rows and page count
   logger.info(`Result code: ${resultCode} and Errmsg: ${errMsg}`);
@@ -255,7 +256,8 @@ export const createNews = async ({
     newsContent: result.recordsets[0],
     info: result.recordsets[1],
     relatedNews: result.recordsets[2],
-    images: imageResult,
+    // images: imageResult,
+    images: result.recordsets[3],
   };
 
   console.log(news);
@@ -264,8 +266,8 @@ export const createNews = async ({
     result: news,
     resultCode: resultCode ?? 0,
     errMsg: errMsg ?? '',
-    imgResultCode: imgResultCode ?? 0,
-    imgErrMsg: imgErrMsg ?? '',
+    // imgResultCode: imgResultCode ?? 0,
+    // imgErrMsg: imgErrMsg ?? '',
   };
 };
 
@@ -278,7 +280,9 @@ export const updateNews = async ({
   newsDate,
   newsStatus,
   imagesList,
+  relatedNewsList,
   lockCounter,
+  latestUpdateUserPkey,
 }: UpdateNewsProps): Promise<any> => {
   const request = await sqlRequest();
 
@@ -290,7 +294,9 @@ export const updateNews = async ({
   request.input('newsDate', sqlDatetime, newsDate);
   request.input('newsStatus', sqlNVarChar, newsStatus);
   request.input('resourceList', sqlNVarChar, JSON.stringify(resourceList));
+  request.input('relatedNewsList', sqlNVarChar, JSON.stringify(relatedNewsList));
   request.input('lockCounter', sqlInt, lockCounter);
+  request.input('latestUpdateUserPkey', sqlNVarChar, latestUpdateUserPkey);
 
   let imagesListWithKey: any = [];
 
@@ -323,6 +329,7 @@ export const updateNews = async ({
       newsStatus,
       lockCounter,
       imagesList,
+      latestUpdateUserPkey,
     },
     inputParameters: request.parameters,
   };

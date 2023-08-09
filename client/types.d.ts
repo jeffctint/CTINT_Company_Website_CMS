@@ -44,6 +44,7 @@ export interface CreateNewsFormProps {
   files: any;
   handleUpload: (data: any) => void;
   isLoading: boolean;
+  removeImages: (i: number) => void;
 }
 
 export interface NewsDetailFormProps {
@@ -55,14 +56,19 @@ export interface NewsDetailFormProps {
   form: any;
   control: Control;
   register: UseFormRegister;
-  fields: UseFieldArrayProps;
-  append: UseFieldArrayAppend;
-  remove: UseFieldArrayRemove;
+  infoFields: UseFieldArrayProps;
+  infoAppend: UseFieldArrayAppend;
+  infoRemove: UseFieldArrayRemove;
+  relatedNewsFields: UseFieldArrayProps;
+  relatedNewsAppend: UseFieldArrayAppend;
+  relatedNewsRemove: UseFieldArrayRemove;
   files: any;
   handleUpload: (data: any) => void;
   isLoading: boolean;
   newsDetail: any;
+  newsList: any;
   info?: any;
+  relatedNews: any;
   images?: any;
   isEdit: boolean;
   setFiles: any;

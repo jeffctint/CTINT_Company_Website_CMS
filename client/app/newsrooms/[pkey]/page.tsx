@@ -18,7 +18,22 @@ import { DetailPkeyProps, UpdateNewsProps } from "@/types";
 import { Button } from "@app/components/ui/button";
 import { Skeleton } from "@app/components/ui/skeleton";
 import dayjs from "dayjs";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
+import { useSession } from "next-auth/react";
+
+const getNewsList = async () => {
+  const res = await fetch("http://localhost:10443/v1/newsrooms", {
+    method: "POST",
+    mode: "cors",
+    cache: "force-cache",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json());
+
+  return res;
+};
 
 const getNewsDetailByPkey = (pkey: string) => {
   const res = fetch(`http://localhost:10443/v1/newsrooms/${pkey}`, {
@@ -54,6 +69,10 @@ const infoSchema = z.object({
   website: z.string(),
 });
 
+const relatedNewsSchema = z.object({
+  referenceCode: z.string(),
+});
+
 const imgSchema = z.object({
   path: z.string(),
   lastModified: z.number(),
@@ -73,6 +92,7 @@ const news = z
     newsContentJp: z.string(),
     newsContentCn: z.string(),
     info: z.array(infoSchema),
+    relatedNews: z.array(relatedNewsSchema),
     status: z.string(),
     imgUrls: z.array(imgSchema),
   })
@@ -109,6 +129,15 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     images: [],
   });
   const router = useRouter();
+  const { data: session } = useSession();
+
+  const newsListQuery = useQuery({
+    queryKey: ["list"],
+    queryFn: async () => await getNewsList(),
+    cacheTime: 100,
+  });
+
+  const newsList = newsListQuery?.data?.data?.newsContent;
 
   const newsDetailQuery = useQuery({
     queryKey: ["detail", pkey],
@@ -134,6 +163,8 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
 
   const detail = newsDetailQuery?.data?.data?.newsContent[0]; // fetched data
   const info = newsDetailQuery?.data?.data?.info;
+  const relatedNews = newsDetailQuery?.data?.data?.relatedNews;
+
   const images = newsDetailQuery?.data?.data?.images;
 
   useEffect(() => {
@@ -184,10 +215,11 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
       newsDate: values.newsDate,
       resourceList: customResource ?? [],
       imagePath: files.length !== 0 ? files?.[0].path : "",
-      // relatedNewsList: null,
+      relatedNewsList: values.relatedNews,
       newsStatus: values.status,
       imagesList: await Promise.all(customImages),
       lockCounter: detail.lockCounter ?? 0,
+      latestUpdateUserPkey: session?.user?.name!,
     };
 
     try {
@@ -203,12 +235,12 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     setFiles([...files, ...data]);
   };
 
-  const infoFields = detailQuery?.info?.map((item: any, index: number) => {
-    return {
-      name: item.name,
-      website: item.website,
-    };
-  });
+  // const infoFields = detailQuery?.info?.map((item: any, index: number) => {
+  //   return {
+  //     name: item.name,
+  //     website: item.website,
+  //   };
+  // });
 
   const removeImages = (index: number) => {
     setFiles(files.filter((item, i) => i !== index));
@@ -223,22 +255,36 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
       // newsContentHk: "",
       // status: "ACTIVE",
       info: [],
+      relatedNews: [],
     },
   });
 
   const { control, register, handleSubmit, watch } = form;
 
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: infoFields,
+    append: infoAppend,
+    remove: infoRemove,
+  } = useFieldArray({
     control,
     name: "info",
   });
 
-  if (newsDetailQuery.isFetching) {
+  const {
+    fields: relatedNewsFields,
+    append: relatedNewsAppend,
+    remove: relatedNewsRemove,
+  } = useFieldArray({
+    control,
+    name: "relatedNews",
+  });
+
+  if (newsDetailQuery.isFetching || newsListQuery.isFetching) {
     return (
       <div className="flex flex-row space-x-4 justify-center items-center w-full h-screen">
-        <Skeleton className="h-10 w-10 rounded-full" />
-        <Skeleton className="h-10 w-10 rounded-full" />
-        <Skeleton className="h-10 w-10 rounded-full" />
+        <Skeleton className="h-8 w-8 rounded-full" />
+        <Skeleton className="h-8 w-8 rounded-full" />
+        <Skeleton className="h-8 w-8 rounded-full" />
       </div>
     );
   }
@@ -263,15 +309,20 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
           form={form}
           control={control}
           register={register}
-          fields={fields}
-          append={append}
-          remove={remove}
+          infoFields={infoFields}
+          infoAppend={infoAppend}
+          infoRemove={infoRemove}
+          relatedNewsFields={relatedNewsFields}
+          relatedNewsAppend={relatedNewsAppend}
+          relatedNewsRemove={relatedNewsRemove}
           files={files}
           handleUpload={handleUpload}
           setFiles={setFiles}
           isLoading={updateNewsMutation.isLoading}
+          newsList={newsList}
           newsDetail={detail}
           info={info}
+          relatedNews={relatedNews}
           images={images}
           isEdit={isEdit}
           removeImages={removeImages}

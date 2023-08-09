@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { CreateNewsFormProps, NewsDetailFormProps } from "@/types";
+import { CreateNewsFormProps, NewsDetailFormProps, NewsProps } from "@/types";
 import TextEditor from "@app/components/TextEditor";
 import { MdOutlineDateRange } from "react-icons/md";
 import { IconCloudUpload, IconDownload, IconX } from "@tabler/icons-react";
@@ -40,6 +40,7 @@ import {
   rem,
 } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { useQuery } from "@tanstack/react-query";
 
 const convertToBase64 = (file: any) => {
   return new Promise((resolve, reject) => {
@@ -54,36 +55,54 @@ const convertToBase64 = (file: any) => {
   });
 };
 
+// const getNewsList = async () => {
+//   const res = await fetch("http://localhost:10443/v1/newsrooms", {
+//     method: "POST",
+//     mode: "cors",
+//     cache: "force-cache",
+//     credentials: "same-origin",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//   }).then((res) => res.json());
+
+//   return res;
+// };
+
 const NewsDetailForm = ({
-  type,
   handleSubmit,
   onFinishHandler,
   form,
-  control,
   register,
-  fields,
-  append,
-  remove,
+  infoFields,
+  infoAppend,
+  infoRemove,
+  relatedNewsFields,
+  relatedNewsAppend,
+  relatedNewsRemove,
   files,
   handleUpload,
   setFiles,
   isLoading,
   newsDetail,
+  newsList,
   isEdit,
   info,
+  relatedNews,
   images,
   removeImages,
 }: NewsDetailFormProps) => {
   const openRef = useRef<() => void>(null);
-  const watchNewsContentEn = form.watch("newsContentEn");
 
-  console.log("newsDetail", newsDetail);
-  console.log("info", info);
-  console.log("images", images);
+  // const newsListQuery = useQuery({
+  //   queryKey: ["list"],
+  //   queryFn: async () => await getNewsList(),
+  //   cacheTime: 100,
+  // });
 
-  // const defaultValue = {
-  //   newsTitle: newsDetail?.newTitle,
-  // };
+  console.log("relatedNews", relatedNews);
+
+  // const newsList = newsListQuery?.data?.data?.newsContent;
 
   useEffect(() => {
     form.setValue("newsTitle", newsDetail?.newsTitle);
@@ -94,6 +113,9 @@ const NewsDetailForm = ({
 
     if (info) {
       form.setValue("info", info); // very important
+    }
+    if (relatedNews) {
+      form.setValue("relatedNews", relatedNews); // very important
     }
   }, [newsDetail, info]);
 
@@ -329,17 +351,6 @@ const NewsDetailForm = ({
               </Text>
             </div>
           </Dropzone>
-          {/* <SimpleGrid
-            cols={4}
-            breakpoints={[{ maxWidth: "sm", cols: 1 }]}
-            mt={previews.length > 0 ? "xl" : 0}
-          >
-            {previews.map((img: any, i: number) => (
-              <div key={i} className="w-full">
-                {img}
-              </div>
-            ))}
-          </SimpleGrid> */}
 
           <SimpleGrid
             cols={4}
@@ -369,7 +380,6 @@ const NewsDetailForm = ({
               <Select
                 value={field.value || newsDetail?.status}
                 onValueChange={field.onChange || newsDetail?.status}
-                // defaultValue={newsDetail?.status}
                 disabled={!isEdit}
               >
                 <FormControl>
@@ -395,7 +405,7 @@ const NewsDetailForm = ({
               disabled={!isEdit}
               type="button"
               onClick={() => {
-                append({ name: "", website: "" });
+                infoAppend({ name: "", website: "" });
               }}
               className="bg-transparent border-[#97f64d] border-[1px] text-[#97f64d]"
             >
@@ -403,7 +413,7 @@ const NewsDetailForm = ({
             </Button>
           </FormLabel>
           <ul>
-            {fields.map((item: any, index: number) => {
+            {infoFields.map((item: any, index: number) => {
               return (
                 <FormField
                   key={item.id}
@@ -419,7 +429,6 @@ const NewsDetailForm = ({
                           <Input
                             {...register(`info.${index}.name`)}
                             disabled={!isEdit}
-                            // defaultValue={item.name}
                           />
                         </FormControl>
                       </FormItem>
@@ -431,7 +440,6 @@ const NewsDetailForm = ({
                           <Input
                             {...register(`info.${index}.website`)}
                             disabled={!isEdit}
-                            // defaultValue={item.website}
                           />
                         </FormControl>
                       </FormItem>
@@ -439,7 +447,71 @@ const NewsDetailForm = ({
                         disabled={!isEdit}
                         type="button"
                         className="bg-[#97f64d] text-[#181f25] hover:bg-[#97f64d]"
-                        onClick={() => remove(index)}
+                        onClick={() => infoRemove(index)}
+                      >
+                        Delete
+                      </Button>
+                    </li>
+                  )}
+                />
+              );
+            })}
+          </ul>
+        </FormItem>
+
+        <FormItem id="relatedNews">
+          <FormLabel className="flex flex-row justify-between items-center">
+            <div className="text-[#a9b3c6]">Related News</div>
+            <Button
+              type="button"
+              disabled={!isEdit}
+              onClick={() => {
+                relatedNewsAppend({ referenceCode: "" });
+              }}
+              className="bg-transparent border-[#97f64d] border-[1px] text-[#97f64d]"
+            >
+              Add News
+            </Button>
+          </FormLabel>
+          <ul>
+            {relatedNewsFields.map((item: any, index: number) => {
+              return (
+                <FormField
+                  key={item.id}
+                  control={form.control}
+                  name={`relatedNews.${index}.referenceCode`}
+                  render={({ field }) => (
+                    <li className="flex flex-row space-x-3 justify-between items-end py-4 2xl:w-3/5">
+                      <FormItem>
+                        <FormLabel className="text-[#a9b3c6]">Code</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger
+                              disabled={!isEdit}
+                              className="text-white bg-transparent border-[#454e5f] w-80"
+                            >
+                              <SelectValue placeholder="Select related news" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="h-72">
+                            {newsList?.map((news: NewsProps) => (
+                              <SelectItem key={news.code} value={news.code}>
+                                {news.newsTitle}
+                                {"  |  "}
+                                {dayjs(news.newsDate).format("YYYY/MM/DD")}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+
+                      <Button
+                        disabled={!isEdit}
+                        className="bg-[#97f64d] text-[#181f25] hover:bg-[#97f64d]"
+                        onClick={() => relatedNewsRemove(index)}
                       >
                         Delete
                       </Button>
