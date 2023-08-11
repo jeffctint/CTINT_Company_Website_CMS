@@ -1,17 +1,26 @@
 import { NewsCardProps } from "@/types";
 import { Card, CardContent, CardFooter } from "@app/components/ui/card";
 import { Badge } from "@app/components/ui/badge";
+import { lazy } from "react";
 
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
+import { Skeleton } from "@app/components/ui/skeleton";
 
 const badgeStatus = [
   { ACTIVE: "#97F64D" },
   { INACTIVE: "#F54F4C" },
   { DRAFT: "#FEFEF6" },
 ];
+// function delayForDemo(promise: any) {
+//   return new Promise((resolve) => {
+//     setTimeout(resolve, 2000);
+//   }).then(() => promise);
+// }
 
+const CustomImage = lazy(() => import("./CustomImage"));
 const NewsCard = ({
   imagePath,
   newsTitle,
@@ -45,13 +54,9 @@ const NewsCard = ({
             {status}
           </Badge>
 
-          <Image
-            // width={380}
-            // height={163}
-            fill
-            src={imagePath ? imagePath : "/images/logo.png"}
-            alt={newsTitle}
-          />
+          <Suspense fallback={<Skeleton className="w-full h-full" />}>
+            <CustomImage newsId={pkey} newsTitle={newsTitle} />
+          </Suspense>
         </CardContent>
         <CardFooter className="flex flex-col justify-between items-start py-2">
           <h2 className="text-white text-lg font-bold">{newsTitle}</h2>
