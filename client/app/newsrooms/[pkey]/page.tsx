@@ -152,7 +152,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     onSuccess: (res) => {
       if (res.errMsg === "" && res.isSuccess) {
         // revalidateTag("newsList");
-        // router.push("/newsrooms");
+        router.push("/newsrooms");
       }
     },
     onError: (error, variables, context) => {
@@ -164,6 +164,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const detail = newsDetailQuery?.data?.data?.newsContent[0]; // fetched data
   const info = newsDetailQuery?.data?.data?.info;
   const relatedNews = newsDetailQuery?.data?.data?.relatedNews;
+  const oldImageListId = newsDetailQuery?.data?.data?.currentImageListIds;
 
   const images = newsDetailQuery?.data?.data?.images;
 
@@ -191,21 +192,23 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
         const resultString = await convertToBase64(image);
 
         return {
-          ...image,
           path: image.path,
           name: image.name,
           imageString: resultString,
-          existed: 1,
         };
       }
       return {
-        ...image,
-        existed: 1,
+        path: image.filePath,
+        name: image.originalFileName,
+        imageString: image.imageString,
+
+        imageKey: image.pkey,
       };
     });
 
     const body = {
       pkey: detail.pkey,
+      newsroomCode: detail.code,
       newsTitle: values.newsTitle,
       newsContent: values.newsContentEn,
       newsContentEn: values.newsContentEn,
@@ -220,6 +223,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
       imagesList: await Promise.all(customImages),
       lockCounter: detail.lockCounter ?? 0,
       latestUpdateUserPkey: session?.user?.name!,
+      oldImageListId: oldImageListId,
     };
 
     try {
@@ -234,6 +238,8 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const handleUpload = (data: any) => {
     setFiles([...files, ...data]);
   };
+
+  console.log("files", files);
 
   // const infoFields = detailQuery?.info?.map((item: any, index: number) => {
   //   return {

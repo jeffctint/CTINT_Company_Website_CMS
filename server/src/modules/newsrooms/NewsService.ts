@@ -26,6 +26,7 @@ interface CreateNewsProps {
 
 interface UpdateNewsProps {
   pkey: string;
+  newsroomCode: string;
   newsTitle: string;
   newsContentEn: string;
   newsContentHk?: string;
@@ -38,6 +39,7 @@ interface UpdateNewsProps {
   imagesList?: ImageProps[];
   lockCounter: number;
   latestUpdateUserPkey: string;
+  oldImageListId: string[];
 }
 
 interface DeleteProps {
@@ -143,6 +145,9 @@ export const getNewsDetailByPkey = async ({ pkey }: any) => {
     info: result.recordsets[1],
     relatedNews: result.recordsets[2],
     images: mappedAttachment,
+    currentImageListIds: mappedAttachment.map((item: any) => {
+      return item.pkey;
+    }),
   };
 
   // Return the recordset for a single statement and do some data transformation
@@ -273,6 +278,7 @@ export const createNews = async ({
 
 export const updateNews = async ({
   pkey,
+  newsroomCode,
   newsTitle,
   newsContentEn,
   newsContentHk,
@@ -283,11 +289,13 @@ export const updateNews = async ({
   relatedNewsList,
   lockCounter,
   latestUpdateUserPkey,
+  oldImageListId,
 }: UpdateNewsProps): Promise<any> => {
   const request = await sqlRequest();
 
   // Set the input parameters
   request.input('pkey', sqlNVarChar, pkey);
+  request.input('newsroomCode', sqlNVarChar, newsroomCode);
   request.input('newsTitle', sqlNVarChar, newsTitle);
   request.input('newsContentEn', sqlNVarChar, newsContentEn);
   request.input('newsContentHk', sqlNVarChar, newsContentHk);
@@ -299,6 +307,8 @@ export const updateNews = async ({
   request.input('latestUpdateUserPkey', sqlNVarChar, latestUpdateUserPkey);
 
   let imagesListWithKey: any = [];
+  let imageResult;
+  let removeResult;
 
   if (imagesList) {
     imagesListWithKey = imagesList.map((img: ImageProps) => {
@@ -311,7 +321,78 @@ export const updateNews = async ({
 
       return img;
     });
-    request.input('imagesList', sqlNVarChar, JSON.stringify(imagesListWithKey));
+    if (imagesListWithKey.length > 0) {
+      console.log('here', imagesListWithKey.length, oldImageListId);
+      const diff = imagesListWithKey.filter((item: any, i: number) => item.imageKey !== oldImageListId[i]); //add images
+      const notIncluded = oldImageListId.filter((item: any, i: number) => imagesListWithKey[i]?.imageKey !== item);
+      // const included = imagesListWithKey.filter((item: any, i: number) => oldImageListId.includes(item.imageKey));
+
+      console.log('diff', diff, 'notIncluded', notIncluded);
+
+      if (diff.length > 0) {
+        console.log('in the diff');
+        for (let i = 0; i < diff.length; i++) {
+          console.log('diff', diff.length);
+
+          const imgItem = diff[i];
+          const request = await sqlRequest();
+
+          const name = imgItem.name;
+          const path = imgItem.path;
+          const imageString = imgItem.imageString;
+          const imageKey = imgItem.imageKey;
+
+          request.input('name', sqlNVarChar, name);
+          request.input('path', sqlNVarChar, path);
+          request.input('imageString', sqlNVarChar, imageString);
+          request.input('imageKey', sqlNVarChar, imageKey);
+          request.input('code', sqlNVarChar, newsroomCode);
+
+          // Set the output parameters
+          request.output('imgResultCode', sqlInt);
+          request.output('imgErrMsg', sqlNVarChar);
+
+          console.log('times', i);
+          console.log('imageResult', imageResult);
+          imageResult = await request.execute('dbo.p_newsroom_createCustomImageForNewsroom');
+        }
+      }
+      if (notIncluded.length > 0) {
+        for (let i = 0; i < notIncluded.length; i++) {
+          console.log('notIncluded', notIncluded.length);
+          const imgItem = notIncluded[i];
+          const request = await sqlRequest();
+
+          const imageKey = imgItem;
+
+          request.input('imageKey', sqlNVarChar, imageKey);
+          // request.input('newsroomCode', sqlNVarChar, newsroomCode);
+
+          // Set the output parameters
+          request.output('removeResultCode', sqlInt);
+          request.output('removeErrMsg', sqlNVarChar);
+
+          console.log('times', i);
+          console.log('imageResult', imageResult);
+          removeResult = await request.execute('dbo.p_newsroom_deleteCustomImageForNewsroom');
+        }
+      }
+      // for (let i = 0; i < imagesListWithKey.length; i++) {
+      //   console.log('dbo.p_newsroom_updateCustomImageForNewsroom', ' notIncluded:', notIncluded, 'imagesListWithKey', imagesListWithKey.length);
+      //   const imgItem = imagesListWithKey[i];
+      //   const request = await sqlRequest();
+      //   const imageKey = imgItem.imageKey;
+
+      //   request.input('imageKey', sqlNVarChar, imageKey);
+      //   request.input('newsroomCode', sqlNVarChar, newsroomCode);
+
+      //   // Set the output parameters
+      //   request.output('imgResultCode', sqlInt);
+      //   request.output('imgErrMsg', sqlNVarChar);
+      // }
+      // imageResult = await request.execute('dbo.p_newsroom_updateCustomImageForNewsroom');
+    }
+    // request.input('imagesList', sqlNVarChar, JSON.stringify(imagesListWithKey));
   }
 
   // Set the output parameters
@@ -323,13 +404,16 @@ export const updateNews = async ({
     action: 'updateNews',
     news: {
       pkey,
+      newsroomCode,
       newsTitle,
       newsContentEn,
       newsDate,
       newsStatus,
       lockCounter,
-      imagesList,
+      // imagesList,
       latestUpdateUserPkey,
+      imageResult,
+      removeResult,
     },
     inputParameters: request.parameters,
   };
@@ -350,6 +434,10 @@ export const updateNews = async ({
   // Get the resultCode and errMsg
   const resultCode = result.output.resultCode;
   const errMsg = result.output.errMsg;
+  // const imgResultCode = imageResult.output.imgResultCode;
+  // const imgErrMsg = imageResult.output.imgErrMsg;
+  // const removeResultCode = removeResult.output.removeResultCode;
+  // const removeErrMsg = removeResult.output.removeErrMsg;
 
   // Log the total rows and page count
   logger.info(`Result code: ${resultCode} and Errmsg: ${errMsg}`);
@@ -359,6 +447,10 @@ export const updateNews = async ({
     result: news,
     resultCode: resultCode ?? 0,
     errMsg: errMsg ?? '',
+    // imgResultCode: imgResultCode ?? 0,
+    // imgErrMsg: imgErrMsg ?? '',
+    // removeResultCode: removeResultCode,
+    // removeErrMsg: removeErrMsg,
   };
 };
 

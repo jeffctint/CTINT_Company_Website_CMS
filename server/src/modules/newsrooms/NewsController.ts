@@ -44,7 +44,7 @@ export const createNewsroom = async (req: Request, res: Response): Promise<any> 
 };
 
 export const updateNewsroom = async (req: Request, res: Response): Promise<any> => {
-  const { result, resultCode, errMsg } = await updateNews(req.body);
+  const { result, resultCode, errMsg, imgResultCode, imgErrMsg, removeResultCode, removeErrMsg } = await updateNews(req.body);
 
   // Log the user body
   logger.info(`Update News: ${JSON.stringify(req.body, null, 2)}`);
@@ -53,6 +53,10 @@ export const updateNewsroom = async (req: Request, res: Response): Promise<any> 
     data: result,
     resultCode: resultCode,
     errMsg: errMsg,
+    imgResultCode: imgResultCode,
+    imgErrMsg: imgErrMsg,
+    removeResultCode: removeResultCode,
+    removeErrMsg: removeErrMsg,
     message: 'Updated news',
     isSuccess: true,
   });

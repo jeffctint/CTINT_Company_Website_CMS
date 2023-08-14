@@ -37,7 +37,7 @@ const NewsCard = ({
       bgColor = "bg-[#F54F4C]";
       break;
     case "DRAFT":
-      bgColor = "bg-[#707A8F]";
+      bgColor = "bg-[#3174FA]";
       break;
 
     default:
