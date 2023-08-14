@@ -20,6 +20,7 @@ import { Skeleton } from "@app/components/ui/skeleton";
 import dayjs from "dayjs";
 import { revalidateTag } from "next/cache";
 import { useSession } from "next-auth/react";
+import { BsArrowLeft } from "react-icons/bs";
 
 const getNewsList = async () => {
   const res = await fetch("http://localhost:10443/v1/newsrooms", {
@@ -297,6 +298,13 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
 
   return (
     <div className="flex w-full h-[1000px] justify-center overflow-auto relative">
+      <Button
+        className="bg-transparent text-[#181f25] hover:bg-transparent absolute px-8 py-4 top-8 left-0"
+        onClick={() => router.push("/newsrooms")}
+      >
+        <BsArrowLeft className="text-white text-4xl" />
+      </Button>
+
       <Button
         className="bg-[#97f64d] text-[#181f25] hover:bg-[#67aa34] absolute px-8 py-4 top-8 right-8"
         onClick={() => setIsEdit(!isEdit)}
