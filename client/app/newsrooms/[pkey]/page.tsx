@@ -306,10 +306,14 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
       </Button>
 
       <Button
-        className="bg-[#97f64d] text-[#181f25] hover:bg-[#67aa34] absolute px-8 py-4 top-8 right-8"
+        className={`${
+          isEdit ? "bg-[#F54F4C]" : "bg-[#97f64d]"
+        } text-[#181f25] ${
+          isEdit ? "hover:bg-[#cf4340]" : "hover:bg-[#67aa34]"
+        } absolute px-8 py-4 top-8 right-8`}
         onClick={() => setIsEdit(!isEdit)}
       >
-        Edit
+        {isEdit ? "Cancel" : "Edit"}
       </Button>
       <div className="flex flex-col p-8 w-1/2 max-w-[800px] min-h-full">
         <div className="flex flex-row items-center space-x-4 border-b-[1px] border-[#454e5f] pb-4 mb-4">

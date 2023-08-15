@@ -53,8 +53,22 @@ interface ImageProps {
   imageKey: string;
 }
 
-export const getNewsList = async ({}): Promise<any> => {
+export type State = 'ALL' | 'ACTIVE' | 'INACTIVE' | 'DRAFT';
+
+type getNewsListParams = {
+  status: State;
+  title?: string;
+  createdDate?: string;
+};
+
+export const getNewsList = async ({ status, title }: getNewsListParams): Promise<any> => {
   const request = await sqlRequest();
+  request.input('status', sqlNVarChar, status);
+
+  if (title) {
+    request.input('title', sqlNVarChar, title);
+  }
+
   request.output('resultCode', sqlInt);
   request.output('errMsg', sqlNVarChar);
 
@@ -94,6 +108,7 @@ export const getNewsList = async ({}): Promise<any> => {
   // Return the recordset for a single statement and do some data transformation
   return {
     list: news,
+    total: news.newsContent.length,
     resultCode: resultCode ?? 0,
     errMsg: errMsg ?? '',
   };

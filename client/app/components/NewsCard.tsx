@@ -4,21 +4,10 @@ import { Badge } from "@app/components/ui/badge";
 import { lazy } from "react";
 
 import dayjs from "dayjs";
-import Image from "next/image";
+
 import Link from "next/link";
 import { Suspense } from "react";
 import { Skeleton } from "@app/components/ui/skeleton";
-
-const badgeStatus = [
-  { ACTIVE: "#97F64D" },
-  { INACTIVE: "#F54F4C" },
-  { DRAFT: "#FEFEF6" },
-];
-// function delayForDemo(promise: any) {
-//   return new Promise((resolve) => {
-//     setTimeout(resolve, 2000);
-//   }).then(() => promise);
-// }
 
 const CustomImage = lazy(() => import("./CustomImage"));
 const NewsCard = ({
