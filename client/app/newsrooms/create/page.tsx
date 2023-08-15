@@ -8,8 +8,6 @@ import CreateNewsForm from "@app/components/CreateNewsForm";
 import { FileWithPath } from "@mantine/dropzone";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import dayjs from "dayjs";
-import Link from "next/link";
 import { CreateNewsProps } from "@/types";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
@@ -25,47 +23,46 @@ const relatedNewsSchema = z.object({
   referenceCode: z.string(),
 });
 
-const imgSchema = z.object({
-  path: z.string(),
-  lastModified: z.number(),
-  lastModifiedDate: z.string().datetime(),
-  name: z.string(),
-  size: z.number(),
-  type: z.string(),
-  webkitRelativePath: z.string(),
-});
+// const imgSchema = z.object({
+//   path: z.string(),
+//   lastModified: z.number(),
+//   lastModifiedDate: z.string().datetime(),
+//   name: z.string(),
+//   size: z.number(),
+//   type: z.string(),
+//   webkitRelativePath: z.string(),
+// });
 
 const news = z
   .object({
-    newsTitle: z.string(),
-    newsDate: z.date(),
-    newsContentEn: z.string(),
+    newsTitle: z
+      .string({
+        required_error: "EN Title is required",
+      })
+      .min(1, { message: "News Title Required" }),
+    newsDate: z.date({
+      required_error: "Date is required",
+    }),
+    newsContentEn: z
+      .string({
+        required_error: "EN News Content is required",
+      })
+      .min(1, { message: "News Content En Required" }),
     newsContentHk: z.string(),
     newsContentJp: z.string(),
     newsContentCn: z.string(),
     info: z.array(infoSchema),
     relatedNews: z.array(relatedNewsSchema),
     status: z.string(),
-    imgUrls: z.array(imgSchema),
+    // imgUrls: z.array(imgSchema),
   })
   .partial();
 
 const newsSchema = news.required({
   newsTitle: true,
-  newsDate: true,
   newsContentEn: true,
-  status: true,
+  newsDate: true,
 });
-
-// const convertToBase64 = (e: any) => {
-//   const reader = new FileReader();
-//   reader.readAsDataURL(e);
-//   reader.onload = (e) => {
-//     console.log("reader.result", e.target?.result);
-//     const result = reader.result;
-//     return result;
-//   };
-// };
 
 const convertToBase64 = (file: any) => {
   return new Promise((resolve, reject) => {
@@ -110,10 +107,10 @@ const CreateNews = () => {
   const form = useForm<z.infer<typeof newsSchema>>({
     resolver: zodResolver(newsSchema),
     defaultValues: {
-      newsTitle: "",
-      newsDate: new Date(),
-      newsContentEn: "",
-      newsContentHk: "",
+      // newsTitle: "",
+      // newsDate: new Date(),
+      // newsContentEn: "",
+      // newsContentHk: "",
     },
   });
 
@@ -154,8 +151,8 @@ const CreateNews = () => {
     );
   });
 
-  const onFinishHandler = async (values: any) => {
-    const customResource = values.info.map((item: any) => {
+  const onFinishHandler = async (values: z.infer<typeof newsSchema>) => {
+    const customResource = values?.info?.map((item: any) => {
       return {
         ...item,
         referenceCode: "ALL",
@@ -186,7 +183,7 @@ const CreateNews = () => {
       imagePath: files.length !== 0 ? files?.[0].path : "",
       relatedNewsList: values?.relatedNews,
       createUserPkey: session?.user?.name!,
-      newsStatus: values.status,
+      newsStatus: values?.status,
       imagesList: await Promise.all(customImages),
     };
 
@@ -217,7 +214,6 @@ const CreateNews = () => {
           handleSubmit={handleSubmit}
           onFinishHandler={onFinishHandler}
           form={form}
-          control={control}
           register={register}
           infoFields={infoFields}
           infoAppend={infoAppend}

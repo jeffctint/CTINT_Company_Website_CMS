@@ -33,7 +33,6 @@ export interface CreateNewsFormProps {
   handleSubmit: FormEventHandler<HTMLFormElement> | undefined;
   onFinishHandler: (data: FieldValues) => Promise<void> | void;
   form: any;
-  control: Control;
   register: UseFormRegister;
   infoFields: UseFieldArrayProps;
   infoAppend: UseFieldArrayAppend;
@@ -97,10 +96,15 @@ export interface CreateNewsProps {
   newsContentCn?: string;
   newsDate: Datetime;
   resourceList?: ResourceProps[];
-  relatedNewsList?: [];
+  imagePath?: string;
+  relatedNewsList?: ReferenceCode[];
   createUserPkey?: string;
-  newsStatus: string;
+  newsStatus?: string;
   imagesList?: FileWithPath[];
+}
+
+export interface ReferenceCode {
+  referenceCode: string;
 }
 
 export interface UpdateNewsProps {

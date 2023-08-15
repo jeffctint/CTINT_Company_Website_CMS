@@ -59,7 +59,6 @@ const CreateNewsForm = ({
   handleSubmit,
   onFinishHandler,
   form,
-  control,
   register,
   infoFields,
   infoAppend,
