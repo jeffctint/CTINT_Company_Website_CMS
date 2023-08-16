@@ -35,17 +35,20 @@ const relatedNewsSchema = z.object({
 
 const news = z
   .object({
-    newsTitle: z
+    newsTitleEn: z
       .string({
         required_error: "EN Title is required",
       })
       .min(1, { message: "News Title Required" }),
+    newsTitleCn: z.string(),
+    newsTitleHk: z.string(),
+    newsTitleJp: z.string(),
     newsDate: z.date({
       required_error: "Date is required",
     }),
     newsContentEn: z
       .string({
-        required_error: "EN News Content is required",
+        required_error: "News Content EN is required",
       })
       .min(1, { message: "News Content En Required" }),
     newsContentHk: z.string(),
@@ -59,7 +62,7 @@ const news = z
   .partial();
 
 const newsSchema = news.required({
-  newsTitle: true,
+  newsTitleEn: true,
   newsContentEn: true,
   newsDate: true,
 });
@@ -172,7 +175,7 @@ const CreateNews = () => {
     });
 
     const body = {
-      newsTitle: values.newsTitle,
+      newsTitleEn: values.newsTitleEn,
       newsContent: values.newsContentEn,
       newsContentEn: values.newsContentEn,
       newsContentHk: values.newsContentHk,
@@ -183,7 +186,52 @@ const CreateNews = () => {
       imagePath: files.length !== 0 ? files?.[0].path : "",
       relatedNewsList: values?.relatedNews,
       createUserPkey: session?.user?.name!,
-      newsStatus: values?.status,
+      newsStatus: values?.status ?? "INACTIVE",
+      imagesList: await Promise.all(customImages),
+    };
+
+    try {
+      console.log("body", body);
+      createNewsMutation.mutate(body);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSaveAsDraft = async (values: any) => {
+    console.log("draft", values);
+    const customResource = values?.info?.map((item: any) => {
+      return {
+        ...item,
+        referenceCode: "ALL",
+        referenceType: "NEWSROOM",
+      };
+    });
+
+    const customImages = files.map(async (image: any) => {
+      const resultString = await convertToBase64(image);
+
+      return {
+        ...image,
+        path: image.path,
+        name: image.name,
+        imageString: resultString,
+      };
+    });
+
+    const body = {
+      newsTitleEn: values.newsTitleEn,
+      newsContent: values.newsContentEn,
+      newsContentEn: values.newsContentEn,
+      newsContentHk: values.newsContentHk,
+      newsContentJp: values.newsContentJp,
+      newsContentCn: values.newsContentCn,
+      newsDate: values.newsDate,
+      resourceList: customResource ?? [],
+      imagePath: files.length !== 0 ? files?.[0].path : "",
+      relatedNewsList: values?.relatedNews,
+      createUserPkey: session?.user?.name!,
+      newsStatus: "DRAFT",
       imagesList: await Promise.all(customImages),
     };
 
@@ -225,6 +273,7 @@ const CreateNews = () => {
           handleUpload={handleUpload}
           isLoading={createNewsMutation.isLoading}
           removeImages={removeImages}
+          handleSaveAsDraft={handleSaveAsDraft}
         />
       </div>
     </div>

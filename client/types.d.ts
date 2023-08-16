@@ -44,6 +44,7 @@ export interface CreateNewsFormProps {
   handleUpload: (data: any) => void;
   isLoading: boolean;
   removeImages: (i: number) => void;
+  handleSaveAsDraft: (data: FieldValues) => Promise<void> | void;
 }
 
 export interface NewsDetailFormProps {
@@ -88,8 +89,10 @@ export interface RelatedNewsProps {
 }
 
 export interface CreateNewsProps {
-  newsTitle: string;
-  newsContent: string;
+  newsTitleEn: string;
+  newsTitleCn?: string;
+  newsTitleHk?: string;
+  newsTitleJp?: string;
   newsContentEn: string;
   newsContentHk?: string;
   newsContentJp?: string;

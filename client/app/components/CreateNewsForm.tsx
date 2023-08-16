@@ -30,6 +30,12 @@ import {
   SelectValue,
 } from "@app/components/ui/select";
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@app/components/ui/tabs";
+import {
   Group,
   Image,
   Text as MText,
@@ -40,6 +46,14 @@ import {
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useQuery } from "@tanstack/react-query";
 import { RiDeleteBinLine } from "react-icons/ri";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@app/components/ui/card";
 
 const getNewsList = async () => {
   const res = await fetch("http://localhost:10443/v1/newsrooms", {
@@ -70,6 +84,7 @@ const CreateNewsForm = ({
   handleUpload,
   isLoading,
   removeImages,
+  handleSaveAsDraft,
 }: CreateNewsFormProps) => {
   const openRef = useRef<() => void>(null);
 
@@ -104,23 +119,219 @@ const CreateNewsForm = ({
         onSubmit={handleSubmit(onFinishHandler)}
         className="w-full space-y-8 pb-8"
       >
-        <FormField
-          control={form.control}
-          name="newsTitle"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[#a9b3c6]">News Title</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
-                />
-              </FormControl>
+        {/* Title Tab */}
+        <Tabs defaultValue="newsTitleEn" className="w-full">
+          <TabsList className="grid w-full h-full grid-cols-2 xl:grid-cols-4">
+            <TabsTrigger
+              // className="data-[state=active]:bg-red-300"
+              value="newsTitleEn"
+            >
+              News Title EN
+            </TabsTrigger>
+            <TabsTrigger value="newsTitleCn">News Title CN</TabsTrigger>
+            <TabsTrigger value="newsTitleHk">News Title HK</TabsTrigger>
+            <TabsTrigger value="newsTitleJp">News Title JP</TabsTrigger>
+          </TabsList>
+          <TabsContent value="newsTitleEn">
+            <Card className="bg-transparent border-0">
+              <FormField
+                control={form.control}
+                name="newsTitleEn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">
+                      News Title EN
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
+                      />
+                    </FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </Card>
+          </TabsContent>
+          <TabsContent value="newsTitleCn">
+            <Card className="bg-transparent border-0">
+              <FormField
+                control={form.control}
+                name="newsTitleCn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">
+                      News Title CN
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </Card>
+          </TabsContent>
+          <TabsContent value="newsTitleHk">
+            <Card className="bg-transparent border-0">
+              <FormField
+                control={form.control}
+                name="newsTitleHk"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">
+                      News Title HK
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </Card>
+          </TabsContent>
+          <TabsContent value="newsTitleJp">
+            <Card className="bg-transparent border-0">
+              <FormField
+                control={form.control}
+                name="newsTitleJp"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">
+                      News Title JP
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </Card>
+          </TabsContent>
+        </Tabs>
+        {/* Content Tab */}
+        <Tabs defaultValue="newsContentEn" className="w-full">
+          <TabsList className="grid w-full h-full grid-cols-2 xl:grid-cols-4">
+            <TabsTrigger
+              // className="data-[state=active]:bg-red-300"
+              value="newsContentEn"
+            >
+              News Content EN
+            </TabsTrigger>
+            <TabsTrigger value="newsContentCn">News Content CN</TabsTrigger>
+            <TabsTrigger value="newsContentHk">News Content HK</TabsTrigger>
+            <TabsTrigger value="newsContentJp">News Content JP</TabsTrigger>
+          </TabsList>
+          <TabsContent value="newsContentEn">
+            <Card className="bg-transparent border-0">
+              <FormField
+                control={form.control}
+                name="newsContentEn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">
+                      News Content EN
+                    </FormLabel>
+                    <FormControl>
+                      <TextEditor
+                        onChange={field.onChange}
+                        content={field.value}
+                        className="w-3/5"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </Card>
+          </TabsContent>
+          <TabsContent value="newsContentCn">
+            <Card className="bg-transparent border-0">
+              <FormField
+                control={form.control}
+                name="newsContentCn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">
+                      News Content Cn
+                    </FormLabel>
+                    <FormControl>
+                      <TextEditor
+                        onChange={field.onChange}
+                        content={field.value}
+                        className="w-3/5"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </Card>
+          </TabsContent>
+          <TabsContent value="newsContentHk">
+            <Card className="bg-transparent border-0">
+              <FormField
+                control={form.control}
+                name="newsContentHk"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">
+                      News Content HK
+                    </FormLabel>
+                    <FormControl>
+                      <TextEditor
+                        onChange={field.onChange}
+                        content={field.value}
+                        className="w-3/5"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </Card>
+          </TabsContent>
+          <TabsContent value="newsContentJp">
+            <Card className="bg-transparent border-0">
+              <FormField
+                control={form.control}
+                name="newsContentJp"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">
+                      News Content JP
+                    </FormLabel>
+                    <FormControl>
+                      <TextEditor
+                        onChange={field.onChange}
+                        content={field.value}
+                        className="w-3/5"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </Card>
+          </TabsContent>
+        </Tabs>
+
         <FormField
           control={form.control}
           name="newsDate"
@@ -154,35 +365,6 @@ const CreateNewsForm = ({
               </Popover>
 
               <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="newsContentEn"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[#a9b3c6]">News Content EN</FormLabel>
-              <FormControl>
-                <TextEditor
-                  onChange={field.onChange}
-                  content={field.value}
-                  className="w-3/5"
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="newsContentHk"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[#a9b3c6]">News Content HK</FormLabel>
-              <FormControl>
-                <TextEditor onChange={field.onChange} content={field.value} />
-              </FormControl>
             </FormItem>
           )}
         />
@@ -248,7 +430,7 @@ const CreateNewsForm = ({
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger className="text-white bg-transparent border-[#454e5f]">
-                    <SelectValue placeholder="Select a verified email to display" />
+                    <SelectValue placeholder="News Status" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -373,13 +555,23 @@ const CreateNewsForm = ({
           </ul>
         </FormItem>
 
-        <Button
-          disabled={isLoading}
-          type="submit"
-          className="w-full bg-[#97f64d] text-[#181f25] hover:bg-[#97f64d] my-10"
-        >
-          {isLoading ? "Loading" : "Submit"}
-        </Button>
+        <div className="flex flex-row w-full space-x-4">
+          <Button
+            disabled={isLoading}
+            type="submit"
+            className="w-2/3 flex-1 bg-[#97f64d] text-[#181f25] hover:bg-[#97f64d] my-10"
+          >
+            {isLoading ? "Loading" : "Submit"}
+          </Button>
+          <Button
+            onClick={handleSubmit(handleSaveAsDraft)}
+            disabled={isLoading}
+            type="button"
+            className="w-1/3 bg-[#e8ffd6] text-[#181f25] hover:bg-[#e8ffd6] my-10"
+          >
+            {isLoading ? "Loading" : "Save Draft"}
+          </Button>
+        </div>
       </form>
     </Form>
   );
