@@ -192,7 +192,7 @@ const CreateNews = () => {
       imagePath: files.length !== 0 ? files?.[0].path : "",
       relatedNewsList: values?.relatedNews,
       createUserPkey: session?.user?.name!,
-      newsStatus: values?.status ?? "INACTIVE",
+      newsStatus: "ACTIVE",
       imagesList: await Promise.all(customImages),
     };
 
@@ -263,7 +263,7 @@ const CreateNews = () => {
     <div className="flex w-full h-[1000px] justify-center overflow-auto">
       <div className="flex flex-col p-8 w-1/2 max-w-[800px] min-h-full">
         <div className="border-b-[1px] border-[#454e5f] pb-4 mb-4">
-          <h1 className="font-bold text-4xl text-white">Create New News</h1>
+          <h1 className="font-bold text-4xl text-white">Create News</h1>
         </div>
         <CreateNewsForm
           type="Create"

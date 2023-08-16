@@ -10,14 +10,13 @@ import CreateButton from "@app/components/CreateButton";
 import { Badge } from "@app/components/ui/badge";
 interface ListStatus {
   status: string;
-  color: string;
 }
 
 const listStatus: ListStatus[] = [
-  { status: "ALL", color: "#FB8530" },
-  { status: "ACTIVE", color: "#97F64D" },
-  { status: "INACTIVE", color: "#F54F4C" },
-  { status: "DRAFT", color: "#3174FA" },
+  { status: "ALL" },
+  { status: "ACTIVE" },
+  { status: "INACTIVE" },
+  { status: "DRAFT" },
 ];
 
 const getNewsList = async (status: string) => {
@@ -45,7 +44,7 @@ const getNewsList = async (status: string) => {
 
 const Newsrooms = () => {
   const [status, setStatus] = useState<string>("ALL");
-  // const news = await getNewsList();
+
   const newsListQuery = (status: string) =>
     useQuery({
       queryKey: newsKeys.list(status),
@@ -53,9 +52,7 @@ const Newsrooms = () => {
       cacheTime: 100,
     });
 
-  // const [newsList, setNewsList] = useState([]);
   const list = newsListQuery(status)?.data?.newsContent;
-  // console.log("list", newsListQuery("ACTIVE"));
 
   return (
     <div className="flex flex-col text-white text-2xl overflow-y-auto">
@@ -64,10 +61,13 @@ const Newsrooms = () => {
           <h1 className="text-4xl text-white font-bold">NEWSROOMS</h1>
           {listStatus.map((item: ListStatus) => (
             <Badge
-              key={item.color}
+              key={item.status}
               onClick={() => setStatus(item.status)}
-              className={` flex justify-center items-center pt-1 mr-2 cursor-pointer`}
-              style={{ backgroundColor: item.color }}
+              className={` flex justify-center items-center pt-1 mr-2 ${
+                item.status === status
+                  ? "bg-[#97F64D] text-[#707A8F]"
+                  : "bg-[#707A8F] "
+              } cursor-pointer`}
             >
               {item.status}
             </Badge>

@@ -116,14 +116,29 @@ const CreateNewsForm = ({
         <Tabs defaultValue="newsTitleEn" className="w-full">
           <TabsList className="grid w-full h-full grid-cols-2 xl:grid-cols-4">
             <TabsTrigger
-              // className="data-[state=active]:bg-red-300"
+              className="data-[state=active]:bg-[#97F64D]"
               value="newsTitleEn"
             >
-              News Title EN
+              English
             </TabsTrigger>
-            <TabsTrigger value="newsTitleCn">News Title CN</TabsTrigger>
-            <TabsTrigger value="newsTitleHk">News Title HK</TabsTrigger>
-            <TabsTrigger value="newsTitleJp">News Title JP</TabsTrigger>
+            <TabsTrigger
+              className="data-[state=active]:bg-[#97F64D]"
+              value="newsTitleCn"
+            >
+              Simplified Chinese
+            </TabsTrigger>
+            <TabsTrigger
+              className="data-[state=active]:bg-[#97F64D]"
+              value="newsTitleHk"
+            >
+              Traditional Chinese
+            </TabsTrigger>
+            <TabsTrigger
+              className="data-[state=active]:bg-[#97F64D]"
+              value="newsTitleJp"
+            >
+              Japanese
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="newsTitleEn">
             <Card className="bg-transparent border-0">
@@ -132,9 +147,7 @@ const CreateNewsForm = ({
                 name="newsTitleEn"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#a9b3c6]">
-                      News Title EN
-                    </FormLabel>
+                    <FormLabel className="text-[#a9b3c6]">Title</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -142,6 +155,23 @@ const CreateNewsForm = ({
                       />
                     </FormControl>
 
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="newsContentEn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">Content</FormLabel>
+                    <FormControl>
+                      <TextEditor
+                        onChange={field.onChange}
+                        content={field.value}
+                        className="w-3/5"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -155,9 +185,7 @@ const CreateNewsForm = ({
                 name="newsTitleCn"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#a9b3c6]">
-                      News Title CN
-                    </FormLabel>
+                    <FormLabel className="text-[#a9b3c6]">Title</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -165,6 +193,23 @@ const CreateNewsForm = ({
                       />
                     </FormControl>
 
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="newsContentCn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">Content</FormLabel>
+                    <FormControl>
+                      <TextEditor
+                        onChange={field.onChange}
+                        content={field.value}
+                        className="w-3/5"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -178,9 +223,7 @@ const CreateNewsForm = ({
                 name="newsTitleHk"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#a9b3c6]">
-                      News Title HK
-                    </FormLabel>
+                    <FormLabel className="text-[#a9b3c6]">Title</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -188,6 +231,23 @@ const CreateNewsForm = ({
                       />
                     </FormControl>
 
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="newsContentHk"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">Content</FormLabel>
+                    <FormControl>
+                      <TextEditor
+                        onChange={field.onChange}
+                        content={field.value}
+                        className="w-3/5"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -201,9 +261,7 @@ const CreateNewsForm = ({
                 name="newsTitleJp"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#a9b3c6]">
-                      News Title JP
-                    </FormLabel>
+                    <FormLabel className="text-[#a9b3c6]">Title</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -215,101 +273,12 @@ const CreateNewsForm = ({
                   </FormItem>
                 )}
               />
-            </Card>
-          </TabsContent>
-        </Tabs>
-        {/* Content Tab */}
-        <Tabs defaultValue="newsContentEn" className="w-full">
-          <TabsList className="grid w-full h-full grid-cols-2 xl:grid-cols-4">
-            <TabsTrigger
-              // className="data-[state=active]:bg-red-300"
-              value="newsContentEn"
-            >
-              News Content EN
-            </TabsTrigger>
-            <TabsTrigger value="newsContentCn">News Content CN</TabsTrigger>
-            <TabsTrigger value="newsContentHk">News Content HK</TabsTrigger>
-            <TabsTrigger value="newsContentJp">News Content JP</TabsTrigger>
-          </TabsList>
-          <TabsContent value="newsContentEn">
-            <Card className="bg-transparent border-0">
-              <FormField
-                control={form.control}
-                name="newsContentEn"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[#a9b3c6]">
-                      News Content EN
-                    </FormLabel>
-                    <FormControl>
-                      <TextEditor
-                        onChange={field.onChange}
-                        content={field.value}
-                        className="w-3/5"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </Card>
-          </TabsContent>
-          <TabsContent value="newsContentCn">
-            <Card className="bg-transparent border-0">
-              <FormField
-                control={form.control}
-                name="newsContentCn"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[#a9b3c6]">
-                      News Content Cn
-                    </FormLabel>
-                    <FormControl>
-                      <TextEditor
-                        onChange={field.onChange}
-                        content={field.value}
-                        className="w-3/5"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </Card>
-          </TabsContent>
-          <TabsContent value="newsContentHk">
-            <Card className="bg-transparent border-0">
-              <FormField
-                control={form.control}
-                name="newsContentHk"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[#a9b3c6]">
-                      News Content HK
-                    </FormLabel>
-                    <FormControl>
-                      <TextEditor
-                        onChange={field.onChange}
-                        content={field.value}
-                        className="w-3/5"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </Card>
-          </TabsContent>
-          <TabsContent value="newsContentJp">
-            <Card className="bg-transparent border-0">
               <FormField
                 control={form.control}
                 name="newsContentJp"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#a9b3c6]">
-                      News Content JP
-                    </FormLabel>
+                    <FormLabel className="text-[#a9b3c6]">Content</FormLabel>
                     <FormControl>
                       <TextEditor
                         onChange={field.onChange}
@@ -324,118 +293,6 @@ const CreateNewsForm = ({
             </Card>
           </TabsContent>
         </Tabs>
-
-        <FormField
-          control={form.control}
-          name="newsDate"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel className="text-[#a9b3c6]">News Date</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button variant={"outline"}>
-                      {field.value ? (
-                        dayjs(field.value).format("DD/MMM/YYYY")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <MdOutlineDateRange className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div>
-          <Dropzone
-            openRef={openRef}
-            onDrop={handleUpload}
-            radius="md"
-            accept={IMAGE_MIME_TYPE}
-            maxSize={10 * 1024 ** 2}
-            multiple={true}
-          >
-            <div style={{ pointerEvents: "none" }}>
-              <Group position="center">
-                <Dropzone.Accept>
-                  <IconDownload size={rem(50)} stroke={1.5} />
-                </Dropzone.Accept>
-                <Dropzone.Reject>
-                  <IconX size={rem(50)} stroke={1.5} />
-                </Dropzone.Reject>
-                <Dropzone.Idle>
-                  <IconCloudUpload size={rem(50)} stroke={1.5} />
-                </Dropzone.Idle>
-              </Group>
-
-              <MText ta="center" fw={700} fz="lg" mt="xl">
-                <Dropzone.Accept>Drop files here</Dropzone.Accept>
-                <Dropzone.Reject>Image file less than 10mb</Dropzone.Reject>
-                <Dropzone.Idle>Upload Images</Dropzone.Idle>
-              </MText>
-              <Text ta="center" fz="sm" mt="xs" c="dimmed">
-                Drag&apos;n&apos;drop files here to upload. We can accept only
-                images files that are less than 10mb in size.
-              </Text>
-            </div>
-          </Dropzone>
-          <SimpleGrid
-            cols={4}
-            breakpoints={[{ maxWidth: "sm", cols: 1 }]}
-            mt={previews.length > 0 ? "xl" : 0}
-          >
-            {previews.map((img: any, i: number) => (
-              <div key={i} className="w-full relative">
-                <span
-                  onClick={() => removeImages(i)}
-                  className="absolute right-0 top-1 flex items-center justify-center w-6 h-6 rounded-full  hover:bg-[#a9b3c6] z-10 cursor-pointer"
-                >
-                  <RiDeleteBinLine className="text-[#ffffff]" />
-                </span>
-                {img}
-              </div>
-            ))}
-          </SimpleGrid>
-        </div>
-
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[#a9b3c6]">Status</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="text-white bg-transparent border-[#454e5f]">
-                    <SelectValue placeholder="News Status" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="ACTIVE">ACTIVE</SelectItem>
-                  <SelectItem value="INACTIVE">INACTIVE</SelectItem>
-                  <SelectItem value="DRAFT">DRAFT</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <FormItem id="label">
           <FormLabel className="flex flex-row justify-between items-center">
@@ -547,6 +404,95 @@ const CreateNewsForm = ({
             })}
           </ul>
         </FormItem>
+
+        <FormField
+          control={form.control}
+          name="newsDate"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel className="text-[#a9b3c6]">News Date</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button variant={"outline"}>
+                      {field.value ? (
+                        dayjs(field.value).format("DD/MMM/YYYY")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <MdOutlineDateRange className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div>
+          <Dropzone
+            openRef={openRef}
+            onDrop={handleUpload}
+            radius="md"
+            accept={IMAGE_MIME_TYPE}
+            maxSize={10 * 1024 ** 2}
+            multiple={true}
+          >
+            <div style={{ pointerEvents: "none" }}>
+              <Group position="center">
+                <Dropzone.Accept>
+                  <IconDownload size={rem(50)} stroke={1.5} />
+                </Dropzone.Accept>
+                <Dropzone.Reject>
+                  <IconX size={rem(50)} stroke={1.5} />
+                </Dropzone.Reject>
+                <Dropzone.Idle>
+                  <IconCloudUpload size={rem(50)} stroke={1.5} />
+                </Dropzone.Idle>
+              </Group>
+
+              <MText ta="center" fw={700} fz="lg" mt="xl">
+                <Dropzone.Accept>Drop files here</Dropzone.Accept>
+                <Dropzone.Reject>Image file less than 10mb</Dropzone.Reject>
+                <Dropzone.Idle>Upload Images</Dropzone.Idle>
+              </MText>
+              <Text ta="center" fz="sm" mt="xs" c="dimmed">
+                Drag&apos;n&apos;drop files here to upload. We can accept only
+                images files that are less than 10mb in size.
+              </Text>
+            </div>
+          </Dropzone>
+          <SimpleGrid
+            cols={4}
+            breakpoints={[{ maxWidth: "sm", cols: 1 }]}
+            mt={previews.length > 0 ? "xl" : 0}
+          >
+            {previews.map((img: any, i: number) => (
+              <div key={i} className="w-full relative">
+                <span
+                  onClick={() => removeImages(i)}
+                  className="absolute right-0 top-1 flex items-center justify-center w-6 h-6 rounded-full  hover:bg-[#a9b3c6] z-10 cursor-pointer"
+                >
+                  <RiDeleteBinLine className="text-[#ffffff]" />
+                </span>
+                {img}
+              </div>
+            ))}
+          </SimpleGrid>
+        </div>
 
         <div className="flex flex-row w-full space-x-4">
           <Button
