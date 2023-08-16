@@ -9,7 +9,7 @@ export interface NewsProps {
   latestUpdateUserPkey: string;
   lockCounter: number;
   newsDate: string;
-  newsTitle: string;
+  newsTitleEn: string;
   pkey: string;
   serviceAgreementTypeDesc: string;
   status: string;
@@ -20,7 +20,7 @@ export interface NewsProps {
 
 export interface NewsCardProps {
   imagePath: string;
-  newsTitle: string;
+  newsTitleEn: string;
   newsDate: string;
   pkey: string;
   status: string;
@@ -111,18 +111,25 @@ export interface ReferenceCode {
 }
 
 export interface UpdateNewsProps {
-  newsTitle: string;
-  newsContent: string;
+  pkey: string;
+  newsroomCode: number;
+  newsTitleEn: string;
+  newsTitleCn?: string;
+  newsTitleHk?: string;
+  newsTitleJp?: string;
   newsContentEn: string;
   newsContentHk?: string;
   newsContentJp?: string;
   newsContentCn?: string;
   newsDate: Datetime;
+  imagePath?: string;
   resourceList?: ResourceProps[];
-  relatedNewsList?: [];
-  createUserPkey?: string;
-  newsStatus: string;
+  relatedNewsList?: ReferenceCode[];
+  newsStatus?: string;
   imagesList?: FileWithPath[];
+  lockCounter: number;
+  latestUpdateUserPkey: string;
+  oldImageListId: string[];
 }
 
 export interface ResourceProps {

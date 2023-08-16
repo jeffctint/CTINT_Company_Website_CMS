@@ -46,14 +46,7 @@ import {
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useQuery } from "@tanstack/react-query";
 import { RiDeleteBinLine } from "react-icons/ri";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@app/components/ui/card";
+import { Card } from "@app/components/ui/card";
 
 const getNewsList = async () => {
   const res = await fetch("http://localhost:10443/v1/newsrooms", {
@@ -532,7 +525,7 @@ const CreateNewsForm = ({
                           <SelectContent className="h-72">
                             {newsList?.map((news: NewsProps) => (
                               <SelectItem key={news.code} value={news.code}>
-                                {news.newsTitle}
+                                {news.newsTitleEn}
                                 {"  |  "}
                                 {dayjs(news.newsDate).format("YYYY/MM/DD")}
                               </SelectItem>

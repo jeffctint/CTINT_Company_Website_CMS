@@ -110,7 +110,11 @@ const CreateNews = () => {
   const form = useForm<z.infer<typeof newsSchema>>({
     resolver: zodResolver(newsSchema),
     defaultValues: {
-      // newsTitle: "",
+      newsTitleEn: "",
+      newsTitleHk: "",
+      newsTitleCn: "",
+      newsTitleJp: "",
+
       // newsDate: new Date(),
       // newsContentEn: "",
       // newsContentHk: "",
@@ -176,7 +180,9 @@ const CreateNews = () => {
 
     const body = {
       newsTitleEn: values.newsTitleEn,
-      newsContent: values.newsContentEn,
+      newsTitleCn: values.newsTitleCn,
+      newsTitleHk: values.newsTitleHk,
+      newsTitleJp: values.newsTitleJp,
       newsContentEn: values.newsContentEn,
       newsContentHk: values.newsContentHk,
       newsContentJp: values.newsContentJp,
@@ -221,7 +227,9 @@ const CreateNews = () => {
 
     const body = {
       newsTitleEn: values.newsTitleEn,
-      newsContent: values.newsContentEn,
+      newsTitleCn: values.newsTitleCn,
+      newsTitleHk: values.newsTitleHk,
+      newsTitleJp: values.newsTitleJp,
       newsContentEn: values.newsContentEn,
       newsContentHk: values.newsContentHk,
       newsContentJp: values.newsContentJp,

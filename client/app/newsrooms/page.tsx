@@ -78,11 +78,11 @@ const Newsrooms = () => {
       </div>
       <div className="p-4 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {list?.map(
-          ({ newsTitle, newsDate, pkey, imagePath, status }: NewsProps) => (
+          ({ newsTitleEn, newsDate, pkey, imagePath, status }: NewsProps) => (
             <NewsCard
               key={pkey}
               imagePath={imagePath[0]?.imageString ?? ""}
-              newsTitle={newsTitle}
+              newsTitleEn={newsTitleEn}
               newsDate={newsDate}
               pkey={pkey}
               status={status}

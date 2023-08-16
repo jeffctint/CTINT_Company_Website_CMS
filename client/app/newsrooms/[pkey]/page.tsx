@@ -86,24 +86,36 @@ const imgSchema = z.object({
 
 const news = z
   .object({
-    newsTitle: z.string(),
-    newsDate: z.date(),
-    newsContentEn: z.string(),
+    newsTitleEn: z
+      .string({
+        required_error: "EN Title is required",
+      })
+      .min(1, { message: "News Title Required" }),
+    newsTitleCn: z.string(),
+    newsTitleHk: z.string(),
+    newsTitleJp: z.string(),
+    newsDate: z.date({
+      required_error: "Date is required",
+    }),
+    newsContentEn: z
+      .string({
+        required_error: "News Content EN is required",
+      })
+      .min(1, { message: "News Content En Required" }),
     newsContentHk: z.string(),
     newsContentJp: z.string(),
     newsContentCn: z.string(),
     info: z.array(infoSchema),
     relatedNews: z.array(relatedNewsSchema),
     status: z.string(),
-    imgUrls: z.array(imgSchema),
+    // imgUrls: z.array(imgSchema),
   })
   .partial();
 
 const newsSchema = news.required({
   newsTitle: true,
-  newsDate: true,
   newsContentEn: true,
-  status: true,
+  newsDate: true,
 });
 
 const convertToBase64 = (file: any) => {
@@ -179,8 +191,8 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     }
   }, [newsDetailQuery.status]);
 
-  const onFinishHandler = async (values: any) => {
-    const customResource = values.info.map((item: any) => {
+  const onFinishHandler = async (values: z.infer<typeof newsSchema>) => {
+    const customResource = values?.info?.map((item: any) => {
       return {
         ...item,
         referenceCode: "ALL",
@@ -202,7 +214,6 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
         path: image.filePath,
         name: image.originalFileName,
         imageString: image.imageString,
-
         imageKey: image.pkey,
       };
     });
@@ -210,12 +221,14 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     const body = {
       pkey: detail.pkey,
       newsroomCode: detail.code,
-      newsTitle: values.newsTitle,
-      newsContent: values.newsContentEn,
+      newsTitleEn: values.newsTitleEn!,
+      newsTitleCn: values?.newsTitleCn,
+      newsTitleHk: values?.newsTitleHk,
+      newsTitleJp: values?.newsTitleJp,
       newsContentEn: values.newsContentEn,
-      newsContentHk: values.newsContentHk,
-      newsContentJp: values.newsContentJp,
-      newsContentCn: values.newsContentCn,
+      newsContentHk: values?.newsContentHk,
+      newsContentJp: values?.newsContentJp,
+      newsContentCn: values?.newsContentCn,
       newsDate: values.newsDate,
       resourceList: customResource ?? [],
       imagePath: files.length !== 0 ? files?.[0].path : "",
@@ -256,7 +269,10 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const form = useForm<z.infer<typeof newsSchema>>({
     resolver: zodResolver(newsSchema),
     defaultValues: {
-      newsTitle: "",
+      newsTitleEn: "",
+      newsTitleHk: "",
+      newsTitleCn: "",
+      newsTitleJp: "",
       // newsDate: new Date(),
       // newsContentEn: "",
       // newsContentHk: "",

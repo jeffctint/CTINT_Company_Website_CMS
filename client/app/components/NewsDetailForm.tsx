@@ -32,6 +32,13 @@ import {
   SelectValue,
 } from "@app/components/ui/select";
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@app/components/ui/tabs";
+import { Card } from "@app/components/ui/card";
+import {
   Group,
   Image,
   Text as MText,
@@ -105,10 +112,17 @@ const NewsDetailForm = ({
   // const newsList = newsListQuery?.data?.data?.newsContent;
 
   useEffect(() => {
-    form.setValue("newsTitle", newsDetail?.newsTitle);
+    form.setValue("newsTitleEn", newsDetail?.newsTitleEn);
+    form.setValue("newsTitleHk", newsDetail?.newsTitleHk ?? "");
+    form.setValue("newsTitleCn", newsDetail?.newsTitleCn ?? "");
+    form.setValue("newsTitleJp", newsDetail?.newsTitleJp ?? "");
+
     form.setValue("newsDate", new Date(newsDetail?.newsDate));
     form.setValue("newsContentEn", newsDetail?.newsContentEn);
-    form.setValue("newsContentHk", newsDetail?.newsContentHk);
+    form.setValue("newsContentHk", newsDetail?.newsContentHk ?? "");
+    form.setValue("newsContentCn", newsDetail?.newsContentCn ?? "");
+    form.setValue("newsContentJp", newsDetail?.newsContentJp ?? "");
+
     form.setValue("status", newsDetail?.status);
 
     if (info) {
@@ -194,7 +208,288 @@ const NewsDetailForm = ({
         onSubmit={handleSubmit(onFinishHandler)}
         className="w-full space-y-8 pb-8"
       >
-        <FormField
+        {/* Title Tab */}
+        <Tabs defaultValue="newsTitleEn" className="w-full">
+          <TabsList className="grid w-full h-full grid-cols-2 xl:grid-cols-4">
+            <TabsTrigger
+              // className="data-[state=active]:bg-red-300"
+              value="newsTitleEn"
+            >
+              News Title EN
+            </TabsTrigger>
+            <TabsTrigger value="newsTitleCn">News Title CN</TabsTrigger>
+            <TabsTrigger value="newsTitleHk">News Title HK</TabsTrigger>
+            <TabsTrigger value="newsTitleJp">News Title JP</TabsTrigger>
+          </TabsList>
+          <TabsContent value="newsTitleEn">
+            <Card className="bg-transparent border-0">
+              <FormField
+                control={form.control}
+                name="newsTitleEn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">
+                      News Title EN
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={!isEdit}
+                        value={field.value}
+                        onChange={field.onChange}
+                        className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </Card>
+          </TabsContent>
+          <TabsContent value="newsTitleCn">
+            <Card className="bg-transparent border-0">
+              <FormField
+                control={form.control}
+                name="newsTitleCn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">
+                      News Title CN
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={!isEdit}
+                        value={field.value}
+                        onChange={field.onChange}
+                        className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </Card>
+          </TabsContent>
+          <TabsContent value="newsTitleHk">
+            <Card className="bg-transparent border-0">
+              <FormField
+                control={form.control}
+                name="newsTitleHk"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">
+                      News Title HK
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={!isEdit}
+                        value={field.value}
+                        onChange={field.onChange}
+                        className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </Card>
+          </TabsContent>
+          <TabsContent value="newsTitleJp">
+            <Card className="bg-transparent border-0">
+              <FormField
+                control={form.control}
+                name="newsTitleJp"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#a9b3c6]">
+                      News Title JP
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={!isEdit}
+                        value={field.value}
+                        onChange={field.onChange}
+                        className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        <Tabs defaultValue="newsContentEn" className="w-full">
+          <TabsList className="grid w-full h-full grid-cols-2 xl:grid-cols-4">
+            <TabsTrigger
+              // className="data-[state=active]:bg-red-300"
+              value="newsContentEn"
+            >
+              News Content EN
+            </TabsTrigger>
+            <TabsTrigger value="newsContentCn">News Content CN</TabsTrigger>
+            <TabsTrigger value="newsContentHk">News Content HK</TabsTrigger>
+            <TabsTrigger value="newsContentJp">News Content JP</TabsTrigger>
+          </TabsList>
+          <TabsContent value="newsContentEn">
+            <Card className="bg-transparent border-0">
+              {!isEdit ? (
+                <div className="flex flex-col w-full mt-2">
+                  <div className="text-[#a9b3c6] pb-2 text-sm">
+                    News Content EN
+                  </div>
+                  <p
+                    className="text-white"
+                    dangerouslySetInnerHTML={{
+                      __html: newsDetail?.newsContentEn,
+                    }}
+                  ></p>
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="newsContentEn"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#a9b3c6]">
+                        News Content EN
+                      </FormLabel>
+                      <FormControl>
+                        <TextEditor
+                          onChange={field.onChange}
+                          content={field.value}
+                          className="w-3/5"
+                          initialContent={newsDetail?.newsContentEn}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
+            </Card>
+          </TabsContent>
+          <TabsContent value="newsContentCn">
+            <Card className="bg-transparent border-0">
+              {!isEdit ? (
+                <div className="flex flex-col w-full mt-2">
+                  <div className="text-[#a9b3c6] pb-2 text-sm">
+                    News Content CN
+                  </div>
+                  <p
+                    className="text-white"
+                    dangerouslySetInnerHTML={{
+                      __html: newsDetail?.newsContentCn,
+                    }}
+                  ></p>
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="newsContentCn"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#a9b3c6]">
+                        News Content CN
+                      </FormLabel>
+                      <FormControl>
+                        <TextEditor
+                          onChange={field.onChange}
+                          content={field.value}
+                          className="w-3/5"
+                          initialContent={newsDetail?.newsContentCn}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
+            </Card>
+          </TabsContent>
+          <TabsContent value="newsContentHk">
+            <Card className="bg-transparent border-0">
+              {!isEdit ? (
+                <div className="flex flex-col w-full mt-2">
+                  <div className="text-[#a9b3c6] pb-2 text-sm">
+                    News Content HK
+                  </div>
+                  <p
+                    className="text-white"
+                    dangerouslySetInnerHTML={{
+                      __html: newsDetail?.newsContentHk,
+                    }}
+                  ></p>
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="newsContentHk"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#a9b3c6]">
+                        News Content HK
+                      </FormLabel>
+                      <FormControl>
+                        <TextEditor
+                          onChange={field.onChange}
+                          content={field.value}
+                          className="w-3/5"
+                          initialContent={newsDetail?.newsContentHk}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
+            </Card>
+          </TabsContent>
+          <TabsContent value="newsContentJp">
+            <Card className="bg-transparent border-0">
+              {!isEdit ? (
+                <div className="flex flex-col w-full mt-2">
+                  <div className="text-[#a9b3c6] pb-2 text-sm">
+                    News Content JP
+                  </div>
+                  <p
+                    className="text-white"
+                    dangerouslySetInnerHTML={{
+                      __html: newsDetail?.newsContentJp,
+                    }}
+                  ></p>
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="newsContentJp"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#a9b3c6]">
+                        News Content Jp
+                      </FormLabel>
+                      <FormControl>
+                        <TextEditor
+                          onChange={field.onChange}
+                          content={field.value}
+                          className="w-3/5"
+                          initialContent={newsDetail?.newsContentJp}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* <FormField
           control={form.control}
           name="newsTitle"
           render={({ field }) => (
@@ -204,7 +499,6 @@ const NewsDetailForm = ({
                 <Input
                   {...field}
                   disabled={!isEdit}
-                  // defaultValue={newsDetail?.newsTitle}
                   value={field.value}
                   onChange={field.onChange}
                   className="text-white bg-transparent border-[#454e5f] border-b-[1px] !outline-none placeholder:bg-transparent"
@@ -214,7 +508,7 @@ const NewsDetailForm = ({
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
         <FormField
           control={form.control}
           name="newsDate"
@@ -499,7 +793,7 @@ const NewsDetailForm = ({
                           <SelectContent className="h-72">
                             {newsList?.map((news: NewsProps) => (
                               <SelectItem key={news.code} value={news.code}>
-                                {news.newsTitle}
+                                {news.newsTitleEn}
                                 {"  |  "}
                                 {dayjs(news.newsDate).format("YYYY/MM/DD")}
                               </SelectItem>

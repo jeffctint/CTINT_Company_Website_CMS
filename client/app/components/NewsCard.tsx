@@ -12,7 +12,7 @@ import { Skeleton } from "@app/components/ui/skeleton";
 const CustomImage = lazy(() => import("./CustomImage"));
 const NewsCard = ({
   imagePath,
-  newsTitle,
+  newsTitleEn,
   newsDate,
   pkey,
   status,
@@ -44,11 +44,11 @@ const NewsCard = ({
           </Badge>
 
           <Suspense fallback={<Skeleton className="w-full h-full" />}>
-            <CustomImage newsId={pkey} newsTitle={newsTitle} />
+            <CustomImage newsId={pkey} newsTitle={newsTitleEn} />
           </Suspense>
         </CardContent>
         <CardFooter className="flex flex-col justify-between items-start py-2">
-          <h2 className="text-white text-lg font-bold">{newsTitle}</h2>
+          <h2 className="text-white text-lg font-bold">{newsTitleEn}</h2>
           <p className="text-[#a9b3c6] text-sm">News Code: {pkey}</p>
           <p className="text-[#a9b3c6] text-sm">
             News Date: {dayjs(newsDate).format("YYYY-MM-D")}

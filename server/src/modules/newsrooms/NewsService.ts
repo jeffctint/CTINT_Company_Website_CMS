@@ -10,7 +10,10 @@ interface ResourceProps {
 }
 
 interface CreateNewsProps {
-  newsTitle: string;
+  newsTitleEn: string;
+  newsTitleCn?: string;
+  newsTitleHk?: string;
+  newsTitleJp?: string;
   newsContentEn: string;
   newsContentHk?: string;
   newsContentJp?: string;
@@ -27,7 +30,10 @@ interface CreateNewsProps {
 interface UpdateNewsProps {
   pkey: string;
   newsroomCode: string;
-  newsTitle: string;
+  newsTitleEn: string;
+  newsTitleCn?: string;
+  newsTitleHk?: string;
+  newsTitleJp?: string;
   newsContentEn: string;
   newsContentHk?: string;
   newsContentJp?: string;
@@ -174,9 +180,14 @@ export const getNewsDetailByPkey = async ({ pkey }: any) => {
 };
 
 export const createNews = async ({
-  newsTitle,
+  newsTitleEn,
+  newsTitleCn,
+  newsTitleHk,
+  newsTitleJp,
   newsContentEn,
   newsContentHk,
+  newsContentCn,
+  newsContentJp,
   newsDate,
   resourceList,
   relatedNewsList,
@@ -188,9 +199,14 @@ export const createNews = async ({
   const request = await sqlRequest();
 
   // Set the input parameters
-  request.input('newsTitle', sqlNVarChar, newsTitle);
+  request.input('newsTitleEn', sqlNVarChar, newsTitleEn);
+  request.input('newsTitleCn', sqlNVarChar, newsTitleCn);
+  request.input('newsTitleHk', sqlNVarChar, newsTitleHk);
+  request.input('newsTitleJp', sqlNVarChar, newsTitleJp);
   request.input('newsContentEn', sqlNVarChar, newsContentEn);
   request.input('newsContentHk', sqlNVarChar, newsContentHk);
+  request.input('newsContentJp', sqlNVarChar, newsContentJp);
+  request.input('newsContentCn', sqlNVarChar, newsContentCn);
 
   request.input('newsDate', sqlDatetime, newsDate);
   request.input('resourceList', sqlNVarChar, JSON.stringify(resourceList));
@@ -218,9 +234,15 @@ export const createNews = async ({
   const logBody = {
     action: 'createNews',
     news: {
-      newsTitle,
+      newsTitleEn,
+      newsTitleCn,
+      newsTitleHk,
+      newsTitleJp,
       newsContentEn,
       newsContentHk,
+      newsContentCn,
+      newsContentJp,
+
       newsDate,
       resourceList,
       relatedNewsList,
@@ -294,9 +316,14 @@ export const createNews = async ({
 export const updateNews = async ({
   pkey,
   newsroomCode,
-  newsTitle,
+  newsTitleEn,
+  newsTitleCn,
+  newsTitleHk,
+  newsTitleJp,
   newsContentEn,
   newsContentHk,
+  newsContentCn,
+  newsContentJp,
   resourceList,
   newsDate,
   newsStatus,
@@ -311,9 +338,15 @@ export const updateNews = async ({
   // Set the input parameters
   request.input('pkey', sqlNVarChar, pkey);
   request.input('newsroomCode', sqlNVarChar, newsroomCode);
-  request.input('newsTitle', sqlNVarChar, newsTitle);
+  request.input('newsTitleEn', sqlNVarChar, newsTitleEn);
+  request.input('newsTitleCn', sqlNVarChar, newsTitleCn);
+  request.input('newsTitleHk', sqlNVarChar, newsTitleHk);
+  request.input('newsTitleJp', sqlNVarChar, newsTitleJp);
   request.input('newsContentEn', sqlNVarChar, newsContentEn);
   request.input('newsContentHk', sqlNVarChar, newsContentHk);
+  request.input('newsContentCn', sqlNVarChar, newsContentCn);
+  request.input('newsContentJp', sqlNVarChar, newsContentJp);
+
   request.input('newsDate', sqlDatetime, newsDate);
   request.input('newsStatus', sqlNVarChar, newsStatus);
   request.input('resourceList', sqlNVarChar, JSON.stringify(resourceList));
@@ -420,7 +453,7 @@ export const updateNews = async ({
     news: {
       pkey,
       newsroomCode,
-      newsTitle,
+      newsTitleEn,
       newsContentEn,
       newsDate,
       newsStatus,
