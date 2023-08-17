@@ -6,6 +6,7 @@ import Topbar from "./components/Topbar";
 import AuthProvider from "./context/AuthProvider";
 import { Inter } from "next/font/google";
 import { Toaster } from "@app/components/ui/toaster";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "./globals.css";
 import QueryProvider from "./contexts/QueryProvider";
@@ -47,6 +48,7 @@ export default function RootLayout({
             )}
             <Toaster />
           </AuthProvider>
+          <ReactQueryDevtools initialIsOpen={true} />
         </body>
       </html>
     </QueryProvider>
