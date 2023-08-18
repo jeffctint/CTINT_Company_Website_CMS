@@ -47,21 +47,19 @@ import {
   rem,
 } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { useQuery } from "@tanstack/react-query";
 
-const convertToBase64 = (file: any) => {
-  return new Promise((resolve, reject) => {
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.onload = () => {
-      resolve(fileReader.result);
-    };
-    fileReader.onerror = (error) => {
-      reject(error);
-    };
-  });
-};
-
+// const convertToBase64 = (file: any) => {
+//   return new Promise((resolve, reject) => {
+//     const fileReader = new FileReader();
+//     fileReader.readAsDataURL(file);
+//     fileReader.onload = () => {
+//       resolve(fileReader.result);
+//     };
+//     fileReader.onerror = (error) => {
+//       reject(error);
+//     };
+//   });
+// };
 
 const NewsDetailForm = ({
   handleSubmit,
@@ -91,7 +89,6 @@ const NewsDetailForm = ({
   jpContent,
 }: NewsDetailFormProps) => {
   const openRef = useRef<() => void>(null);
-
 
   useEffect(() => {
     form.setValue("newsTitleEn", newsDetail?.newsTitleEn);

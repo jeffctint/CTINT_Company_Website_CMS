@@ -1,4 +1,4 @@
-import { CreateNewsProps, UpdateNewsProps } from "@/types";
+import { CreateNewsProps, UpdateNewsProps, UpdateStatus } from "@/types";
 
 export const getNewsList = async (status: string) => {
   let stringUrl = `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/newsrooms`;
@@ -61,6 +61,24 @@ export const createNews = async (data: CreateNewsProps) => {
 export const updateNews = async (data: UpdateNewsProps) => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/newsrooms/updateNews`,
+    {
+      method: "PUT",
+      mode: "cors",
+      cache: "no-store",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  ).then((res) => res.json());
+
+  return res;
+};
+
+export const updateStatus = async (data: UpdateStatus) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/newsrooms/updateStatus`,
     {
       method: "PUT",
       mode: "cors",

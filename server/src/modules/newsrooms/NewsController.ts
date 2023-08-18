@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { StatusCodes } from 'http-status-codes';
 import { logger } from '@/utils/logger';
-import { createNews, deleteNews, getNewsDetailByPkey, getNewsList, updateNews, State as NewsState } from './NewsService';
+import { createNews, deleteNews, getNewsDetailByPkey, getNewsList, updateNews, State as NewsState, changeStatus } from './NewsService';
 
 export const findAllNews = async (req: Request, res: Response): Promise<any> => {
   // get the request header and pass it to the service
@@ -77,6 +77,23 @@ export const deleteNewsroom = async (req: Request, res: Response): Promise<any> 
     resultCode: resultCode,
     errMsg: errMsg,
     message: 'Delete news',
+    isSuccess: true,
+  });
+};
+
+export const updateStatus = async (req: Request, res: Response): Promise<any> => {
+  const { result, resultCode, errMsg, pkey, status } = await changeStatus(req.body);
+
+  // Log the user body
+  logger.info(`Update Status: ${JSON.stringify(req.body, null, 2)}`);
+
+  res.status(StatusCodes.OK).json({
+    data: result,
+    pkey,
+    status,
+    resultCode: resultCode,
+    errMsg: errMsg,
+    message: 'Update Status',
     isSuccess: true,
   });
 };

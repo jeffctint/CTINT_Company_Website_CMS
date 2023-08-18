@@ -2,41 +2,24 @@
 
 import NewsDetailForm from "@app/components/NewsDetailForm";
 
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { useState, cache, use, useEffect } from "react";
-import { FileWithPath } from "@mantine/dropzone";
 import {
-  useMutation,
-  useQueries,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { DetailPkeyProps, UpdateNewsProps } from "@/types";
+  getNewsDetailByPkey,
+  getNewsList,
+  updateNews,
+} from "@/features/newsrooms/api";
+import { newsKeys } from "@/features/queries";
+import { DetailPkeyProps } from "@/types";
 import { Button } from "@app/components/ui/button";
 import { Skeleton } from "@app/components/ui/skeleton";
-import dayjs from "dayjs";
-import { revalidateTag } from "next/cache";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FileWithPath } from "@mantine/dropzone";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
 import { BsArrowLeft } from "react-icons/bs";
-import { getNewsDetailByPkey, updateNews } from "@/features/newsrooms/api";
-import { newsKeys } from "@/features/queries";
-
-const getNewsList = async () => {
-  const res = await fetch("http://localhost:10443/v1/newsrooms", {
-    method: "POST",
-    mode: "cors",
-    cache: "force-cache",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((res) => res.json());
-
-  return res;
-};
+import * as z from "zod";
 
 const infoSchema = z.object({
   name: z.string(),
@@ -109,13 +92,13 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const queryClient = useQueryClient();
 
   const newsListQuery = useQuery({
-    queryKey: ["list"],
-    queryFn: async () => await getNewsList(),
+    queryKey: newsKeys.list("ALL"),
+    queryFn: async () => await getNewsList("ALL"),
     cacheTime: 100,
   });
 
-  const newsList = newsListQuery?.data?.data?.newsContent;
-
+  const newsList = newsListQuery?.data?.newsContent;
+  console.log("newsList", newsList);
   const newsDetailQuery = useQuery({
     queryKey: newsKeys.detail(pkey),
     queryFn: async () => await getNewsDetailByPkey(pkey),
@@ -187,14 +170,10 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   useEffect(() => {
     if (newsDetailQuery.isFetched) {
       setDetailQuery({
-        // detail: newsDetailQuery?.data?.data?.newsContent[0],
         info: newsDetailQuery?.data?.data?.info,
-        // images: newsDetailQuery?.data?.data?.images,
       });
     }
   }, [newsDetailQuery.status]);
-
-  console.log("enContent", enContent);
 
   const onFinishHandler = async (values: any) => {
     const customResource = values?.info?.map((item: any) => {
@@ -246,7 +225,6 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     };
 
     try {
-      console.log("values555555", body);
       updateNewsMutation.mutate(body);
     } catch (err) {
       console.error(err);
@@ -256,15 +234,6 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const handleUpload = (data: any) => {
     setFiles([...files, ...data]);
   };
-
-  console.log("files", files);
-
-  // const infoFields = detailQuery?.info?.map((item: any, index: number) => {
-  //   return {
-  //     name: item.name,
-  //     website: item.website,
-  //   };
-  // });
 
   const removeImages = (index: number) => {
     setFiles(files.filter((item, i) => i !== index));

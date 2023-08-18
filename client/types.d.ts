@@ -146,3 +146,8 @@ export type DetailPkeyProps = {
     pkey: string;
   };
 };
+
+export interface UpdateStatus {
+  pkey: string;
+  status: string;
+}
