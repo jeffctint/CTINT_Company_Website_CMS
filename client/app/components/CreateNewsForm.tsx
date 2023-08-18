@@ -80,6 +80,10 @@ const CreateNewsForm = ({
   handleSaveAsDraft,
 }: CreateNewsFormProps) => {
   const openRef = useRef<() => void>(null);
+  const enContent = form.watch("newsContentEn");
+  const cnContent = form.watch("newsContentCn");
+  const hkContent = form.watch("newsContentHk");
+  const jpContent = form.watch("newsContentJp");
 
   const newsListQuery = useQuery({
     queryKey: ["list"],
@@ -167,6 +171,7 @@ const CreateNewsForm = ({
                     <FormLabel className="text-[#a9b3c6]">Content</FormLabel>
                     <FormControl>
                       <TextEditor
+                        initialContent={enContent}
                         onChange={field.onChange}
                         content={field.value}
                         className="w-3/5"
@@ -205,6 +210,7 @@ const CreateNewsForm = ({
                     <FormLabel className="text-[#a9b3c6]">Content</FormLabel>
                     <FormControl>
                       <TextEditor
+                        initialContent={cnContent}
                         onChange={field.onChange}
                         content={field.value}
                         className="w-3/5"
@@ -243,6 +249,7 @@ const CreateNewsForm = ({
                     <FormLabel className="text-[#a9b3c6]">Content</FormLabel>
                     <FormControl>
                       <TextEditor
+                        initialContent={hkContent}
                         onChange={field.onChange}
                         content={field.value}
                         className="w-3/5"
@@ -281,6 +288,7 @@ const CreateNewsForm = ({
                     <FormLabel className="text-[#a9b3c6]">Content</FormLabel>
                     <FormControl>
                       <TextEditor
+                        initialContent={jpContent}
                         onChange={field.onChange}
                         content={field.value}
                         className="w-3/5"

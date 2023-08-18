@@ -8,6 +8,7 @@ import { newsKeys } from "@/features/queries";
 
 import CreateButton from "@app/components/CreateButton";
 import { Badge } from "@app/components/ui/badge";
+import { getNewsList } from "@/features/newsrooms/api";
 interface ListStatus {
   status: string;
 }
@@ -18,29 +19,6 @@ const listStatus: ListStatus[] = [
   { status: "INACTIVE" },
   { status: "DRAFT" },
 ];
-
-const getNewsList = async (status: string) => {
-  let stringUrl = "http://localhost:10443/v1/newsrooms";
-  let url = new URL(stringUrl);
-  let params = url.searchParams;
-  params.append("status", status);
-
-  const res = await fetch(url, {
-    method: "POST",
-    mode: "cors",
-    cache: "no-cache",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
-
-    next: {
-      tags: ["newsList"],
-    },
-  }).then((res) => res.json());
-
-  return res.data;
-};
 
 const Newsrooms = () => {
   const [status, setStatus] = useState<string>("ALL");

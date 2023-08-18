@@ -73,6 +73,10 @@ export interface NewsDetailFormProps {
   isEdit: boolean;
   setFiles: any;
   removeImages: (i: number) => void;
+  enContent?: any;
+  cnContent?: any;
+  hkContent?: any;
+  jpContent?: any;
 }
 
 export interface ResourceProps {

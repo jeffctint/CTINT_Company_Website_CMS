@@ -21,6 +21,8 @@ import dayjs from "dayjs";
 import { revalidateTag } from "next/cache";
 import { useSession } from "next-auth/react";
 import { BsArrowLeft } from "react-icons/bs";
+import { getNewsDetailByPkey, updateNews } from "@/features/newsrooms/api";
+import { newsKeys } from "@/features/queries";
 
 const getNewsList = async () => {
   const res = await fetch("http://localhost:10443/v1/newsrooms", {
@@ -36,35 +38,6 @@ const getNewsList = async () => {
   return res;
 };
 
-const getNewsDetailByPkey = (pkey: string) => {
-  const res = fetch(`http://localhost:10443/v1/newsrooms/${pkey}`, {
-    method: "GET",
-    mode: "cors",
-    cache: "no-store",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((res) => res.json());
-
-  return res;
-};
-
-const updateNews = async (data: UpdateNewsProps) => {
-  const res = await fetch(`http://localhost:10443/v1/newsrooms/updateNews`, {
-    method: "PUT",
-    mode: "cors",
-    cache: "no-store",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  }).then((res) => res.json());
-
-  return res;
-};
-
 const infoSchema = z.object({
   name: z.string(),
   website: z.string(),
@@ -72,16 +45,6 @@ const infoSchema = z.object({
 
 const relatedNewsSchema = z.object({
   referenceCode: z.string(),
-});
-
-const imgSchema = z.object({
-  path: z.string(),
-  lastModified: z.number(),
-  lastModifiedDate: z.string().datetime(),
-  name: z.string(),
-  size: z.number(),
-  type: z.string(),
-  webkitRelativePath: z.string(),
 });
 
 const news = z
@@ -113,7 +76,7 @@ const news = z
   .partial();
 
 const newsSchema = news.required({
-  newsTitle: true,
+  newsTitleEn: true,
   newsContentEn: true,
   newsDate: true,
 });
@@ -143,6 +106,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   });
   const router = useRouter();
   const { data: session } = useSession();
+  const queryClient = useQueryClient();
 
   const newsListQuery = useQuery({
     queryKey: ["list"],
@@ -153,18 +117,16 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const newsList = newsListQuery?.data?.data?.newsContent;
 
   const newsDetailQuery = useQuery({
-    queryKey: ["detail", pkey],
+    queryKey: newsKeys.detail(pkey),
     queryFn: async () => await getNewsDetailByPkey(pkey),
-    cacheTime: 100,
+    cacheTime: 1000,
   });
-
-  console.log("newsDetailQuery", newsDetailQuery);
 
   const updateNewsMutation = useMutation({
     mutationFn: updateNews,
     onSuccess: (res) => {
+      queryClient.invalidateQueries(newsKeys.list("ALL"));
       if (res.errMsg === "" && res.isSuccess) {
-        // revalidateTag("newsList");
         router.push("/newsrooms");
       }
     },
@@ -181,6 +143,47 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
 
   const images = newsDetailQuery?.data?.data?.images;
 
+  const form = useForm<z.infer<typeof newsSchema>>({
+    resolver: zodResolver(newsSchema),
+    defaultValues: {
+      newsTitleEn: "",
+      newsTitleHk: "",
+      newsTitleCn: "",
+      newsTitleJp: "",
+      // newsDate: new Date(),
+      // newsContentEn: "",
+      // newsContentHk: "",
+      // status: "ACTIVE",
+      info: [],
+      relatedNews: [],
+    },
+  });
+
+  const { control, register, handleSubmit, watch } = form;
+
+  const enContent = watch("newsContentEn");
+  const cnContent = watch("newsContentCn");
+  const hkContent = watch("newsContentHk");
+  const jpContent = watch("newsContentJp");
+
+  const {
+    fields: infoFields,
+    append: infoAppend,
+    remove: infoRemove,
+  } = useFieldArray({
+    control,
+    name: "info",
+  });
+
+  const {
+    fields: relatedNewsFields,
+    append: relatedNewsAppend,
+    remove: relatedNewsRemove,
+  } = useFieldArray({
+    control,
+    name: "relatedNews",
+  });
+
   useEffect(() => {
     if (newsDetailQuery.isFetched) {
       setDetailQuery({
@@ -191,7 +194,9 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     }
   }, [newsDetailQuery.status]);
 
-  const onFinishHandler = async (values: z.infer<typeof newsSchema>) => {
+  console.log("enContent", enContent);
+
+  const onFinishHandler = async (values: any) => {
     const customResource = values?.info?.map((item: any) => {
       return {
         ...item,
@@ -225,10 +230,10 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
       newsTitleCn: values?.newsTitleCn,
       newsTitleHk: values?.newsTitleHk,
       newsTitleJp: values?.newsTitleJp,
-      newsContentEn: values.newsContentEn,
-      newsContentHk: values?.newsContentHk,
-      newsContentJp: values?.newsContentJp,
-      newsContentCn: values?.newsContentCn,
+      newsContentEn: enContent,
+      newsContentHk: hkContent,
+      newsContentJp: jpContent,
+      newsContentCn: cnContent,
       newsDate: values.newsDate,
       resourceList: customResource ?? [],
       imagePath: files.length !== 0 ? files?.[0].path : "",
@@ -241,9 +246,8 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     };
 
     try {
-      updateNewsMutation.mutate(body);
-
       console.log("values555555", body);
+      updateNewsMutation.mutate(body);
     } catch (err) {
       console.error(err);
     }
@@ -265,42 +269,6 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const removeImages = (index: number) => {
     setFiles(files.filter((item, i) => i !== index));
   };
-
-  const form = useForm<z.infer<typeof newsSchema>>({
-    resolver: zodResolver(newsSchema),
-    defaultValues: {
-      newsTitleEn: "",
-      newsTitleHk: "",
-      newsTitleCn: "",
-      newsTitleJp: "",
-      // newsDate: new Date(),
-      // newsContentEn: "",
-      // newsContentHk: "",
-      // status: "ACTIVE",
-      info: [],
-      relatedNews: [],
-    },
-  });
-
-  const { control, register, handleSubmit, watch } = form;
-
-  const {
-    fields: infoFields,
-    append: infoAppend,
-    remove: infoRemove,
-  } = useFieldArray({
-    control,
-    name: "info",
-  });
-
-  const {
-    fields: relatedNewsFields,
-    append: relatedNewsAppend,
-    remove: relatedNewsRemove,
-  } = useFieldArray({
-    control,
-    name: "relatedNews",
-  });
 
   if (newsDetailQuery.isFetching || newsListQuery.isFetching) {
     return (
@@ -360,6 +328,10 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
           images={images}
           isEdit={isEdit}
           removeImages={removeImages}
+          enContent={enContent}
+          cnContent={cnContent}
+          hkContent={hkContent}
+          jpContent={jpContent}
         />
       </div>
     </div>

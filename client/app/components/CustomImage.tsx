@@ -1,34 +1,31 @@
+import { getNewsDetailByPkey } from "@/features/newsrooms/api";
+import { newsKeys } from "@/features/queries";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-
-const getNewsDetailByPkey = (pkey: string) => {
-  const res = fetch(`http://localhost:10443/v1/newsrooms/${pkey}`, {
-    method: "GET",
-    mode: "cors",
-    cache: "no-store",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((res) => res.json());
-
-  return res;
-};
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 const CustomImage = async ({ newsId, newsTitle }: any) => {
-  const detail = await getNewsDetailByPkey(newsId);
+  const newsDetailQuery = useQuery({
+    queryKey: newsKeys.detail(newsId),
+    queryFn: async () => await getNewsDetailByPkey(newsId),
+  });
 
-  const image = detail?.data?.images[0]?.imageString;
-
+  const image = newsDetailQuery?.data?.data?.images[0]?.imageString;
+  newsDetailQuery.isFetched;
   return (
     <div>
-      <Image
-        width={380}
-        height={163}
-        src={image ? image : "/images/logo.png"}
-        alt={newsTitle}
-        loading="lazy"
-        className="h-40"
-      />
+      {newsDetailQuery.isFetched ? (
+        <Image
+          width={380}
+          height={163}
+          src={image}
+          alt={newsTitle}
+          loading="lazy"
+          className="h-40"
+        />
+      ) : (
+        <Skeleton className="w-full h-full" />
+      )}
     </div>
   );
 };

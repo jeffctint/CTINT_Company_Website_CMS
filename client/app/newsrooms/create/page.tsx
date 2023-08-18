@@ -10,9 +10,10 @@ import { useFieldArray, useForm } from "react-hook-form";
 
 import { CreateNewsProps } from "@/types";
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { revalidateTag } from "next/cache";
+import { newsKeys } from "@/features/queries";
 
 const infoSchema = z.object({
   name: z.string(),
@@ -97,10 +98,12 @@ const createNews = async (data: CreateNewsProps) => {
 
 const CreateNews = () => {
   const { data: session } = useSession();
+  const queryClient = useQueryClient();
 
   const createNewsMutation = useMutation({
     mutationFn: createNews,
     onSuccess: (res) => {
+      queryClient.invalidateQueries(newsKeys.list("ALL"));
       if (res.errMsg === "" && res.isSuccess) {
         router.push("/newsrooms");
       }
@@ -143,20 +146,20 @@ const CreateNews = () => {
 
   const [files, setFiles] = useState<FileWithPath[]>([]); //upload images
 
-  const previews = files.map((file: any, index: number) => {
-    //mantine show images previews
-    const imageUrl = URL.createObjectURL(file);
-    return (
-      <img
-        width={"100%"}
-        height={"100%"}
-        key={index}
-        src={imageUrl}
-        alt={file.name}
-        className=" object-cover"
-      />
-    );
-  });
+  // const previews = files.map((file: any, index: number) => {
+  //   //mantine show images previews
+  //   const imageUrl = URL.createObjectURL(file);
+  //   return (
+  //     <img
+  //       width={"100%"}
+  //       height={"100%"}
+  //       key={index}
+  //       src={imageUrl}
+  //       alt={file.name}
+  //       className=" object-cover"
+  //     />
+  //   );
+  // });
 
   const onFinishHandler = async (values: z.infer<typeof newsSchema>) => {
     const customResource = values?.info?.map((item: any) => {

@@ -62,19 +62,6 @@ const convertToBase64 = (file: any) => {
   });
 };
 
-// const getNewsList = async () => {
-//   const res = await fetch("http://localhost:10443/v1/newsrooms", {
-//     method: "POST",
-//     mode: "cors",
-//     cache: "force-cache",
-//     credentials: "same-origin",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   }).then((res) => res.json());
-
-//   return res;
-// };
 
 const NewsDetailForm = ({
   handleSubmit,
@@ -98,18 +85,13 @@ const NewsDetailForm = ({
   relatedNews,
   images,
   removeImages,
+  enContent,
+  cnContent,
+  hkContent,
+  jpContent,
 }: NewsDetailFormProps) => {
   const openRef = useRef<() => void>(null);
 
-  // const newsListQuery = useQuery({
-  //   queryKey: ["list"],
-  //   queryFn: async () => await getNewsList(),
-  //   cacheTime: 100,
-  // });
-
-  console.log("relatedNews", relatedNews);
-
-  // const newsList = newsListQuery?.data?.data?.newsContent;
 
   useEffect(() => {
     form.setValue("newsTitleEn", newsDetail?.newsTitleEn);
@@ -117,10 +99,10 @@ const NewsDetailForm = ({
     form.setValue("newsTitleCn", newsDetail?.newsTitleCn);
     form.setValue("newsTitleJp", newsDetail?.newsTitleJp);
 
-    form.setValue("newsContentEn", newsDetail?.newsContentEn);
-    form.setValue("newsContentHk", newsDetail?.newsContentHk);
-    form.setValue("newsContentCn", newsDetail?.newsContentCn);
-    form.setValue("newsContentJp", newsDetail?.newsContentJp);
+    form.setValue("newsContentEn", newsDetail?.newsContentEn ?? "");
+    form.setValue("newsContentHk", newsDetail?.newsContentHk ?? "");
+    form.setValue("newsContentCn", newsDetail?.newsContentCn ?? "");
+    form.setValue("newsContentJp", newsDetail?.newsContentJp ?? "");
 
     form.setValue("newsDate", new Date(newsDetail?.newsDate));
     form.setValue("status", newsDetail?.status);
@@ -151,8 +133,6 @@ const NewsDetailForm = ({
 
       return bytes.buffer;
     };
-
-    // const binaryString = atob(item.imageString.split(",")[1]);
 
     if (!item.imageString) {
       const imageUrl = URL.createObjectURL(item);
@@ -248,9 +228,10 @@ const NewsDetailForm = ({
                           onChange={field.onChange}
                           content={field.value}
                           className="w-3/5"
-                          initialContent={newsDetail?.newsContentEn}
+                          initialContent={enContent}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -301,9 +282,10 @@ const NewsDetailForm = ({
                           onChange={field.onChange}
                           content={field.value}
                           className="w-3/5"
-                          initialContent={newsDetail?.newsContentCn}
+                          initialContent={cnContent}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -355,9 +337,10 @@ const NewsDetailForm = ({
                           onChange={field.onChange}
                           content={field.value}
                           className="w-3/5"
-                          initialContent={newsDetail?.newsContentHk}
+                          initialContent={hkContent}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -408,9 +391,10 @@ const NewsDetailForm = ({
                           onChange={field.onChange}
                           content={field.value}
                           className="w-3/5"
-                          initialContent={newsDetail?.newsContentJp}
+                          initialContent={jpContent}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -452,6 +436,7 @@ const NewsDetailForm = ({
                             disabled={!isEdit}
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                       <FormItem>
                         <FormLabel className="text-[#a9b3c6]">
@@ -463,6 +448,7 @@ const NewsDetailForm = ({
                             disabled={!isEdit}
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                       <Button
                         disabled={!isEdit}
@@ -527,6 +513,7 @@ const NewsDetailForm = ({
                             ))}
                           </SelectContent>
                         </Select>
+                        <FormMessage />
                       </FormItem>
 
                       <Button
