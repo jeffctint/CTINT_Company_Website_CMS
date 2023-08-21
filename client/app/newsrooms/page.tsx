@@ -8,7 +8,10 @@ import { newsKeys } from "@/features/queries";
 
 import CreateButton from "@app/components/CreateButton";
 import { Badge } from "@app/components/ui/badge";
-import { getNewsList } from "@/features/newsrooms/api";
+import { getNewsList, updateStatus } from "@/features/newsrooms/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { useRouter } from "next/router";
 interface ListStatus {
   status: string;
 }
@@ -22,14 +25,33 @@ const listStatus: ListStatus[] = [
 
 const Newsrooms = () => {
   const [status, setStatus] = useState<string>("ALL");
+  const queryClient = useQueryClient();
 
-  const newsListQuery = (status: string) =>
-    useQuery({
-      queryKey: newsKeys.list(status),
-      queryFn: async () => await getNewsList(status),
-    });
+  const newsListQuery = useQuery({
+    queryKey: newsKeys.list(status),
+    queryFn: async () => await getNewsList(status),
+  });
 
-  const list = newsListQuery(status)?.data?.newsContent;
+  const list = newsListQuery.data?.newsContent;
+
+  const fetchStatus = useMutation({
+    mutationFn: updateStatus,
+    onSuccess: () => {
+      queryClient.invalidateQueries(newsKeys.list("ALL"));
+    },
+    onError: (error, variables, context) => {
+      // An error happened!
+      console.log("error", error, "variables", variables, "context", context);
+    },
+  });
+
+  const handleStatusUpdate = ({ pkey, status }: any) => {
+    fetchStatus.mutate({ pkey, status });
+  };
+
+  if (!list) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col text-white text-2xl overflow-y-auto">
@@ -63,6 +85,7 @@ const Newsrooms = () => {
               newsDate={newsDate}
               pkey={pkey}
               status={status}
+              handleStatus={handleStatusUpdate}
             />
           )
         )}

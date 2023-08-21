@@ -24,6 +24,7 @@ export interface NewsCardProps {
   newsDate: string;
   pkey: string;
   status: string;
+  handleStatus: ({ pkey: string, status: string }) => void;
 }
 
 export interface CreateNewsFormProps {

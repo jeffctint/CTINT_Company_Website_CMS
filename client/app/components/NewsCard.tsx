@@ -15,10 +15,6 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Skeleton } from "@app/components/ui/skeleton";
-import { updateStatus } from "@/features/newsrooms/api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { newsKeys } from "@/features/queries";
-import { useRouter } from "next/router";
 
 const CustomImage = lazy(() => import("./CustomImage"));
 const NewsCard = ({
@@ -27,6 +23,7 @@ const NewsCard = ({
   newsDate,
   pkey,
   status,
+  handleStatus,
 }: NewsCardProps) => {
   let bgColor = "";
   switch (status) {
@@ -44,48 +41,16 @@ const NewsCard = ({
       break;
   }
 
-  // const router = useRouter();
-
-  const queryClient = useQueryClient();
-
-  const fetchStatus = useMutation({
-    mutationFn: updateStatus,
-    onSuccess: (res) => {
-      console.log("res", res);
-
-      // ✅ update the list we are currently on instantly
-      queryClient.setQueryData(newsKeys.list("ALL"), (previous: any) => {
-        if (previous) {
-          const oldItem = previous.newsContent.find(
-            (item: any) => item.pkey === res.pkey
-          );
-          const newItem = { ...oldItem, status: res.status };
-          return [...previous, newItem];
-        } else {
-          return previous;
-        }
-      });
-      // queryClient.invalidateQueries(newsKeys.list("ALL"));
-      // if (res.errMsg === "" && res.isSuccess) {
-      //   router.push("/newsrooms");
-      // }
-    },
-    onError: (error, variables, context) => {
-      // An error happened!
-      console.log("error", error, "variables", variables, "context", context);
-    },
-  });
-
   return (
     <Link href={`/newsrooms/${pkey}`}>
       <Card className="border-none overflow-clip bg-[#181f25] cursor-pointer max-h-[320px]">
         <CardContent className="p-0 rounded-lg h-[160px] relative">
           <div className="absolute z-10 top-2 right-2  flex items-center justify-center">
             <Select
-              onValueChange={(status) => fetchStatus.mutate({ pkey, status })}
+              onValueChange={(status) => handleStatus({ pkey, status })}
               defaultValue={status}
             >
-              <SelectTrigger className=" p-0 border-0">
+              <SelectTrigger className=" p-0 border-0 focus: outline-none">
                 <Badge
                   className={` ${bgColor} flex justify-center items-center pt-1`}
                 >
@@ -102,7 +67,11 @@ const NewsCard = ({
           </div>
 
           <Suspense fallback={<Skeleton className="w-full h-full" />}>
-            <CustomImage newsId={pkey} newsTitle={newsTitleEn} />
+            <CustomImage
+              newsId={pkey}
+              newsTitle={newsTitleEn}
+              imagePath={imagePath}
+            />
           </Suspense>
         </CardContent>
         <CardFooter className="flex flex-col justify-between items-start py-2">
