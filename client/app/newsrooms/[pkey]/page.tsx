@@ -239,16 +239,6 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     setFiles(files.filter((item, i) => i !== index));
   };
 
-  if (newsDetailQuery.isFetching || newsListQuery.isFetching) {
-    return (
-      <div className="flex flex-row space-x-4 justify-center items-center w-full h-screen">
-        <Skeleton className="h-8 w-8 rounded-full" />
-        <Skeleton className="h-8 w-8 rounded-full" />
-        <Skeleton className="h-8 w-8 rounded-full" />
-      </div>
-    );
-  }
-
   return (
     <div className="flex w-full h-[1000px] justify-center overflow-auto relative">
       <Button

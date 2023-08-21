@@ -58,6 +58,7 @@ const Newsrooms = () => {
       <div className="p-4 flex flex-row justify-between items-center w-full">
         <div className="flex flex-row items-center space-x-4">
           <h1 className="text-4xl text-white font-bold">NEWSROOMS</h1>
+
           {listStatus.map((item: ListStatus) => (
             <Badge
               key={item.status}
