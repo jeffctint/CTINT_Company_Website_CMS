@@ -12,7 +12,7 @@
         justify-content: center;
         
     }
-    @keyframes spin {
+    /* @keyframes spin {
         0% {
             transform: rotate(0deg);
 
@@ -20,23 +20,22 @@
         100% {
             transform: rotate(360deg);
         }
-    }
+    } */
 
-    .loader {
+    /* .loader {
         position: absolute;
         width: 160px;
         height: 160px;
-        /* background: #ffffff; */
         border-radius: 50%;
         animation: spin 2s linear infinite;
-    }
-    .loader:nth-child(2),
+    } */
+    /* .loader:nth-child(2),
     .loader:nth-child(4) {
         animation-delay: -1s;
         filter: hue-rotate(45deg);
-    }
+    } */
 
-    .loader:nth-child(1)::before,
+    /* .loader:nth-child(1)::before,
     .loader:nth-child(2)::before {
         content: "";
         position: absolute;
@@ -50,9 +49,9 @@
         border-top-left-radius: 100px;
         border-bottom-left-radius: 100px;
 
-    }
+    } */
 
-    .loader i {
+    /* .loader i {
         position: absolute;
         top: 0;
         left: 50%;
@@ -73,16 +72,49 @@
         0 0 90px #F7971D,
         0 0 100px #F7971D
         ;
-    }
+    } */
 
-    .loader span {
+    /* .loader span {
         position:absolute;
         inset: 18px;
         background: #181f25;
         border-radius: 50%;
         z-index: 1;
-    }
+    } */
 
+    /* div {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+      } */
+      
+      /* .container {
+        width: 200px;
+        height: 200px;
+      } */
 
+    @keyframes animation {
+        0% {
+          stroke-dasharray: 1 98;
+          stroke-dashoffset: -105;
+        }
+        50% {
+          stroke-dasharray: 80 10;
+          stroke-dashoffset: -160;
+        }
+        100% {
+          stroke-dasharray: 1 98;
+          stroke-dashoffset: -300;
+        }
+      }
+      
+      #spinner {
+        transform-origin: center;
+        animation-name: animation;
+        animation-duration: 1.2s;
+        animation-timing-function: cubic-bezier;
+        animation-iteration-count: infinite;
+      }
 
 }

@@ -8,6 +8,7 @@ import { Inter } from "next/font/google";
 import { Toaster } from "@app/components/ui/toaster";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
+
 import "./globals.css";
 import QueryProvider from "./contexts/QueryProvider";
 
