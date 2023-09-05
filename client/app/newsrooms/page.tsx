@@ -29,7 +29,7 @@ const Newsrooms = () => {
 
   const newsListQuery = useQuery({
     queryKey: newsKeys.list(status),
-    queryFn: async () => await getNewsList(status),
+    queryFn: async () => await getNewsList(status, '0'),
   });
 
   const list = newsListQuery.data?.newsContent;
@@ -63,11 +63,10 @@ const Newsrooms = () => {
             <Badge
               key={item.status}
               onClick={() => setStatus(item.status)}
-              className={` flex justify-center items-center pt-1 mr-2 ${
-                item.status === status
+              className={` flex justify-center items-center pt-1 mr-2 ${item.status === status
                   ? "bg-[#97F64D] text-[#707A8F]"
                   : "bg-[#707A8F] "
-              } cursor-pointer`}
+                } cursor-pointer`}
             >
               {item.status}
             </Badge>

@@ -12,10 +12,12 @@ export const findAllNews = async (req: Request, res: Response): Promise<any> => 
 
   const queries = {
     status: (req.query?.status as NewsState) ?? 'ALL',
+    page: (req.query?.page as string) ?? '0',
+    pageSize: '9'
   };
 
-  const { list, total, resultCode, errMsg } = await getNewsList(queries);
-  res.status(StatusCodes.OK).json({ data: list, total: total, resultCode: resultCode, errMsg: errMsg, message: 'findAllNews' });
+  const { list, total, resultCode, errMsg, totalPages, totalRows } = await getNewsList(queries);
+  res.status(StatusCodes.OK).json({ data: list, total: total, resultCode: resultCode, errMsg: errMsg, message: 'findAllNews', totalPages: totalPages, totalRows: totalRows });
 };
 
 export const findNewsByPkey = async (req: Request, res: Response): Promise<any> => {

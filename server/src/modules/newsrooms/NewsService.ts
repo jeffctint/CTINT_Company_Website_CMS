@@ -70,11 +70,16 @@ type getNewsListParams = {
   status: State;
   title?: string;
   createdDate?: string;
+  page?: string;
+  pageSize?: string;
 };
 
-export const getNewsList = async ({ status, title }: getNewsListParams): Promise<any> => {
+export const getNewsList = async ({ status, title, page, pageSize }: getNewsListParams): Promise<any> => {
   const request = await sqlRequest();
   request.input('status', sqlNVarChar, status);
+  request.input('page', sqlNVarChar, page);
+  request.input('pageSize', sqlNVarChar, pageSize);
+
 
   if (title) {
     request.input('title', sqlNVarChar, title);
@@ -82,6 +87,10 @@ export const getNewsList = async ({ status, title }: getNewsListParams): Promise
 
   request.output('resultCode', sqlInt);
   request.output('errMsg', sqlNVarChar);
+  request.output('totalRows', sqlInt);
+  request.output('totalPages', sqlInt);
+
+
 
   // Create the log body for the logger
   const logBody = {
@@ -98,6 +107,9 @@ export const getNewsList = async ({ status, title }: getNewsListParams): Promise
   // Get the resultCode and errMsg
   const resultCode = result.output.resultCode;
   const errMsg = result.output.errMsg;
+  const totalRows = result.output.totalRows
+  const totalPages = result.output.totalPages
+
 
   // Log the total rows and page count
   logger.info(`Result code: ${resultCode} and Errmsg: ${errMsg}`);
@@ -111,6 +123,8 @@ export const getNewsList = async ({ status, title }: getNewsListParams): Promise
         imagePath: images ?? [],
       };
     }),
+    totalPages:totalPages,
+    totalRows: totalRows
     // info: result.recordsets[1],
     // images: result.recordsets[2],
   };
@@ -122,6 +136,8 @@ export const getNewsList = async ({ status, title }: getNewsListParams): Promise
     total: news.newsContent.length,
     resultCode: resultCode ?? 0,
     errMsg: errMsg ?? '',
+    totalRows: totalRows,
+    totalPages: totalPages
   };
 };
 

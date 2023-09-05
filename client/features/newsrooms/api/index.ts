@@ -1,10 +1,13 @@
 import { CreateNewsProps, UpdateNewsProps, UpdateStatus } from "@/types";
 
-export const getNewsList = async (status: string) => {
+export const getNewsList = async (status: string, page?: string, pageSize?: string) => {
   let stringUrl = `${process.env.NEXT_PUBLIC_ENDPOINT_URL}/newsrooms`;
   let url = new URL(stringUrl);
   let params = url.searchParams;
   params.append("status", status);
+  params.append("page", page!);
+  params.append("pageSize", pageSize!);
+
 
   const res = await fetch(url, {
     method: "POST",
