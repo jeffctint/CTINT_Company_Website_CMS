@@ -5,6 +5,7 @@ import { InteractionRoute } from '@modules/interaction';
 import { HealthCheckRoute } from '@modules/healthcheck';
 import { NewsroomsRoute } from '@/modules/newsrooms';
 import { LoginRoute } from '@/modules/login';
+import { ContactRoutes } from '@/modules/contact';
 
 const router = express.Router();
 
@@ -25,6 +26,10 @@ const defaultRoutes = [
   {
     path: '/healthcheck',
     route: HealthCheckRoute,
+  },
+  {
+    path: '/contact',
+    route: ContactRoutes,
   },
 ];
 

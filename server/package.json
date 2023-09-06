@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@anatine/zod-openapi": "^1.11.1",
+    "@types/nodemailer": "^6.4.9",
     "@types/passport-http-bearer": "^1.0.37",
     "@types/uuid": "^9.0.2",
     "bcrypt": "^5.0.1",
@@ -41,6 +42,7 @@
     "morgan": "^1.10.0",
     "mssql": "^9.1.1",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.4",
     "openapi3-ts": "^3.1.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
