@@ -13,7 +13,7 @@ export const findAllNews = async (req: Request, res: Response): Promise<any> => 
   const queries = {
     status: (req.query?.status as NewsState) ?? 'ALL',
     page: (req.query?.page as string) ?? '0',
-    pageSize: '9'
+    pageSize: (req.query?.pageSize as string)
   };
 
   const { list, total, resultCode, errMsg, totalPages, totalRows } = await getNewsList(queries);

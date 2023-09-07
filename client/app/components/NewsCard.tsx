@@ -45,7 +45,7 @@ const NewsCard = ({
     <Link href={`/newsrooms/${pkey}`}>
       <Card className="border-none overflow-clip bg-[#181f25] cursor-pointer max-h-[320px]">
         <CardContent className="p-0 rounded-lg h-[160px] relative">
-          <div className="absolute z-10 top-2 right-2  flex items-center justify-center">
+          <div className="absolute z-10 top-0 right-1  flex items-center justify-center">
             <Select
               onValueChange={(status) => handleStatus({ pkey, status })}
               defaultValue={status}

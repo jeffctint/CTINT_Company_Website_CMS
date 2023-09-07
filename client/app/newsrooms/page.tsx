@@ -12,6 +12,7 @@ import { getNewsList, updateStatus } from "@/features/newsrooms/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useRouter } from "next/router";
+import Loading from "./loading";
 interface ListStatus {
   status: string;
 }
@@ -28,7 +29,7 @@ const Newsrooms = () => {
   const queryClient = useQueryClient();
 
   const newsListQuery = useQuery({
-    queryKey: newsKeys.list(status),
+    queryKey: newsKeys.list(status, '0'),
     queryFn: async () => await getNewsList(status, '0'),
   });
 
@@ -37,7 +38,7 @@ const Newsrooms = () => {
   const fetchStatus = useMutation({
     mutationFn: updateStatus,
     onSuccess: () => {
-      queryClient.invalidateQueries(newsKeys.list("ALL"));
+      queryClient.invalidateQueries(newsKeys.list("ALL", '0'));
     },
     onError: (error, variables, context) => {
       // An error happened!
@@ -53,6 +54,10 @@ const Newsrooms = () => {
     return null;
   }
 
+  if (newsListQuery.isFetching) {
+    return <Loading />
+  }
+
   return (
     <div className="flex flex-col text-white text-2xl overflow-y-auto">
       <div className="p-4 flex flex-row justify-between items-center w-full">
@@ -64,8 +69,8 @@ const Newsrooms = () => {
               key={item.status}
               onClick={() => setStatus(item.status)}
               className={` flex justify-center items-center pt-1 mr-2 ${item.status === status
-                  ? "bg-[#97F64D] text-[#707A8F]"
-                  : "bg-[#707A8F] "
+                ? "bg-[#97F64D] text-[#707A8F]"
+                : "bg-[#707A8F] "
                 } cursor-pointer`}
             >
               {item.status}

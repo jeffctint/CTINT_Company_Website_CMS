@@ -6,7 +6,7 @@
 export const newsKeys = {
   all: ["news"] as const,
   lists: () => [...newsKeys.all, "list"] as const,
-  list: (status: string) => [...newsKeys.lists(), status] as const,
+  list: (status: string, page?: string, pageSize?: string) => [...newsKeys.lists(), status, page, pageSize] as const,
   details: () => [...newsKeys.all, "detail"] as const,
   detail: (pkey: string) => [...newsKeys.details(), pkey] as const,
 };

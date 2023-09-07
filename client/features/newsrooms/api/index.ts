@@ -5,8 +5,8 @@ export const getNewsList = async (status: string, page?: string, pageSize?: stri
   let url = new URL(stringUrl);
   let params = url.searchParams;
   params.append("status", status);
-  params.append("page", page!);
-  params.append("pageSize", pageSize!);
+  params.append("page", page ?? '0');
+  params.append("pageSize", pageSize ?? '999');
 
 
   const res = await fetch(url, {
