@@ -3,6 +3,7 @@ import { logger } from '@utils/logger';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import fs from 'fs';
+import { exitOnError } from 'winston';
 
 interface ResourceProps {
   name: string;
@@ -391,14 +392,21 @@ export const updateNews = async ({
       return img;
     });
     if (imagesListWithKey.length > 0) {
-      console.log('here', imagesListWithKey.length, oldImageListId);
-      const diff = imagesListWithKey.filter((item: any, i: number) => item.imageKey !== oldImageListId[i]); //add images
+      console.log('here', imagesListWithKey, imagesListWithKey.length, "oldImageListId", oldImageListId);
+      // const diff = imagesListWithKey.filter((item: any, i: number) => item.imageKey !== oldImageListId[i]); //add images
+      const diff = imagesListWithKey.filter((item: any) => !oldImageListId.some((key:any) => key === item.imageKey)); //add images
+      const existedImage = imagesListWithKey.filter((item: any) => oldImageListId.filter((key:any) => key !== item.imageKey)); //existed items after deleted the first item
+
       const notIncluded = oldImageListId.filter((item: any, i: number) => imagesListWithKey[i]?.imageKey !== item);
-      // const included = imagesListWithKey.filter((item: any, i: number) => oldImageListId.includes(item.imageKey));
+      const removed = oldImageListId.filter((item: any) => !imagesListWithKey.some((key:any) => key.imageKey === item));
 
-      console.log('diff', diff, 'notIncluded', notIncluded);
+      const existed = oldImageListId.filter((item: any) => imagesListWithKey.find((img:any) => img.imageKey === item));
 
-      if (diff.length > 0) {
+      console.log('diff', diff, 'notIncluded', notIncluded, "existed", existed) ;
+      console.log('existedImage', existedImage)
+      console.log("removed", removed)
+
+      if (diff.length > 0 || existedImage.length === 0) {
         console.log('in the diff');
         for (let i = 0; i < diff.length; i++) {
           console.log('diff', diff.length);
@@ -410,12 +418,15 @@ export const updateNews = async ({
           const path = imgItem.path;
           const imageString = imgItem.imageString;
           const imageKey = imgItem.imageKey;
+          const position =  imgItem.position
 
           request.input('name', sqlNVarChar, name);
           request.input('path', sqlNVarChar, path);
           request.input('imageString', sqlNVarChar, imageString);
           request.input('imageKey', sqlNVarChar, imageKey);
           request.input('code', sqlNVarChar, newsroomCode);
+          request.input('position', sqlInt, position);
+
 
           // Set the output parameters
           request.output('imgResultCode', sqlInt);
@@ -423,13 +434,43 @@ export const updateNews = async ({
 
           console.log('times', i);
           console.log('imageResult', imageResult);
+  
           imageResult = await request.execute('dbo.p_newsroom_createCustomImageForNewsroom');
+          
+        }
+      } 
+      
+      
+      if(diff.length > 0 && existedImage.length > 0) {
+        console.log('in the existed');
+        for (let i = 0; i < existedImage.length; i++) {
+          console.log('existedImage', existedImage.length);
+
+          const imgItem = existedImage[i];
+          const request = await sqlRequest();
+
+          const imageKey = imgItem.imageKey;
+          const position =  imgItem.position
+
+          request.input('imageKey', sqlNVarChar, imageKey);
+          request.input('newsroomCode', sqlNVarChar, newsroomCode);
+          request.input('position', sqlInt, position);
+
+
+          // Set the output parameters
+          request.output('imgResultCode', sqlInt);
+          request.output('imgErrMsg', sqlNVarChar);
+
+          console.log('existedImage times', i);
+          console.log('imageResult', imageResult);
+          imageResult = await request.execute('dbo.p_newsroom_updateCustomImageForNewsroom');
         }
       }
-      if (notIncluded.length > 0) {
-        for (let i = 0; i < notIncluded.length; i++) {
-          console.log('notIncluded', notIncluded.length);
-          const imgItem = notIncluded[i];
+
+      if (removed.length > 0) {
+        for (let i = 0; i < removed.length; i++) {
+          console.log('in removed', removed.length);
+          const imgItem = removed[i];
           const request = await sqlRequest();
 
           const imageKey = imgItem;
@@ -446,22 +487,8 @@ export const updateNews = async ({
           removeResult = await request.execute('dbo.p_newsroom_deleteCustomImageForNewsroom');
         }
       }
-      // for (let i = 0; i < imagesListWithKey.length; i++) {
-      //   console.log('dbo.p_newsroom_updateCustomImageForNewsroom', ' notIncluded:', notIncluded, 'imagesListWithKey', imagesListWithKey.length);
-      //   const imgItem = imagesListWithKey[i];
-      //   const request = await sqlRequest();
-      //   const imageKey = imgItem.imageKey;
-
-      //   request.input('imageKey', sqlNVarChar, imageKey);
-      //   request.input('newsroomCode', sqlNVarChar, newsroomCode);
-
-      //   // Set the output parameters
-      //   request.output('imgResultCode', sqlInt);
-      //   request.output('imgErrMsg', sqlNVarChar);
-      // }
-      // imageResult = await request.execute('dbo.p_newsroom_updateCustomImageForNewsroom');
     }
-    // request.input('imagesList', sqlNVarChar, JSON.stringify(imagesListWithKey));
+  
   }
 
   // Set the output parameters

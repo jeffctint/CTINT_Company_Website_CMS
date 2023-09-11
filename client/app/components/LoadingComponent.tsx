@@ -10,7 +10,7 @@ const LoadingComponent = () => {
               dx="0"
               dy="0"
               stdDeviation="1.5"
-              flood-color="#fc6767"
+              floodColor="#fc6767"
             />
           </filter>
         </defs>
@@ -18,8 +18,8 @@ const LoadingComponent = () => {
           id="spinner"
           fill="transparent"
           stroke="#F7971D"
-          stroke-width="3px"
-          stroke-linecap="round"
+          strokeWidth="3px"
+          strokeLinecap="round"
           filter={"url(#shadow)"}
           cx="50"
           cy="50"
@@ -47,21 +47,3 @@ const LoadingComponent = () => {
 };
 
 export default LoadingComponent;
-
-// <div className="container">
-//   <div className="loader">
-//     <span></span>
-//   </div>
-//   <div className="loader">
-//     <span></span>
-//   </div>
-
-//   <div className="loader">
-//     <i></i>
-//   </div>
-
-//   <div className="loader">
-//     <i></i>
-//   </div>
-//   <Image src={Loading} width={70} height={70} alt={""} className="z-10" />
-// </div>

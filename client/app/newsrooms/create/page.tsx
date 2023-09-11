@@ -170,7 +170,7 @@ const CreateNews = () => {
       };
     });
 
-    const customImages = files.map(async (image: any) => {
+    const customImages = files.map(async (image: any, i: number) => {
       const resultString = await convertToBase64(image);
 
       return {
@@ -178,6 +178,7 @@ const CreateNews = () => {
         path: image.path,
         name: image.name,
         imageString: resultString,
+        position: i
       };
     });
 
@@ -217,7 +218,7 @@ const CreateNews = () => {
       };
     });
 
-    const customImages = files.map(async (image: any) => {
+    const customImages = files.map(async (image: any, i: number) => {
       const resultString = await convertToBase64(image);
 
       return {
@@ -225,6 +226,7 @@ const CreateNews = () => {
         path: image.path,
         name: image.name,
         imageString: resultString,
+        position: i
       };
     });
 

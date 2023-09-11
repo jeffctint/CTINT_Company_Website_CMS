@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { BsArrowLeft } from "react-icons/bs";
 import * as z from "zod";
+import Loading from "../loading";
 
 const infoSchema = z.object({
   name: z.string(),
@@ -98,7 +99,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   });
 
   const newsList = newsListQuery?.data?.newsContent;
-  console.log("newsList", newsList);
+
   const newsDetailQuery = useQuery({
     queryKey: newsKeys.detail(pkey),
     queryFn: async () => await getNewsDetailByPkey(pkey),
@@ -108,7 +109,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const updateNewsMutation = useMutation({
     mutationFn: updateNews,
     onSuccess: (res) => {
-      queryClient.invalidateQueries(newsKeys.list("ALL"));
+      queryClient.invalidateQueries(newsKeys.list("ALL", "0"));
       if (res.errMsg === "" && res.isSuccess) {
         router.push("/newsrooms");
       }
@@ -125,6 +126,8 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
   const oldImageListId = newsDetailQuery?.data?.data?.currentImageListIds;
 
   const images = newsDetailQuery?.data?.data?.images;
+
+  console.log("images", images)
 
   const form = useForm<z.infer<typeof newsSchema>>({
     resolver: zodResolver(newsSchema),
@@ -184,7 +187,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
       };
     });
 
-    const customImages = files.map(async (image: any) => {
+    const customImages = files.map(async (image: any, i: number) => {
       if (!image.imageString) {
         const resultString = await convertToBase64(image);
 
@@ -192,6 +195,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
           path: image.path,
           name: image.name,
           imageString: resultString,
+          position: i
         };
       }
       return {
@@ -199,6 +203,7 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
         name: image.originalFileName,
         imageString: image.imageString,
         imageKey: image.pkey,
+        position: i
       };
     });
 
@@ -224,7 +229,10 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
       oldImageListId: oldImageListId,
     };
 
+
     try {
+      console.log("update", body)
+
       updateNewsMutation.mutate(body);
     } catch (err) {
       console.error(err);
@@ -239,6 +247,11 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     setFiles(files.filter((item, i) => i !== index));
   };
 
+  if (updateNewsMutation.isLoading) {
+    return <Loading />
+  }
+
+
   return (
     <div className="flex w-full h-[1000px] justify-center overflow-auto relative">
       <Button
@@ -249,11 +262,9 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
       </Button>
 
       <Button
-        className={`${
-          isEdit ? "bg-[#F54F4C]" : "bg-[#97f64d]"
-        } text-[#181f25] ${
-          isEdit ? "hover:bg-[#cf4340]" : "hover:bg-[#67aa34]"
-        } absolute px-8 py-4 top-8 right-8`}
+        className={`${isEdit ? "bg-[#F54F4C]" : "bg-[#97f64d]"
+          } text-[#181f25] ${isEdit ? "hover:bg-[#cf4340]" : "hover:bg-[#67aa34]"
+          } absolute px-8 py-4 top-8 right-8`}
         onClick={() => setIsEdit(!isEdit)}
       >
         {isEdit ? "Cancel" : "Edit"}
