@@ -6,6 +6,7 @@ import { HealthCheckRoute } from '@modules/healthcheck';
 import { NewsroomsRoute } from '@/modules/newsrooms';
 import { LoginRoute } from '@/modules/login';
 import { ContactRoutes } from '@/modules/contact';
+import {PartnerRoutes} from '@/modules/partner';
 
 const router = express.Router();
 
@@ -31,6 +32,10 @@ const defaultRoutes = [
     path: '/contact',
     route: ContactRoutes,
   },
+  {
+    path: '/partners',
+    route: PartnerRoutes
+  }
 ];
 
 // Add routes available only in development mode

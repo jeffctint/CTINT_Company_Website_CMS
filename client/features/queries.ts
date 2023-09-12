@@ -10,3 +10,9 @@ export const newsKeys = {
   details: () => [...newsKeys.all, "detail"] as const,
   detail: (pkey: string) => [...newsKeys.details(), pkey] as const,
 };
+
+export const partnersKeys = {
+  all: ["partners"] as const,
+  lists: () => [...partnersKeys.all, "list"] as const,
+  list: () => [...partnersKeys.lists()] as const,
+}

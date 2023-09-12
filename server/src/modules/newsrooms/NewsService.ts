@@ -95,7 +95,7 @@ export const getNewsList = async ({ status, title, page, pageSize }: getNewsList
 
   // Create the log body for the logger
   const logBody = {
-    action: 'getInteractions',
+    action: 'getNews',
     inputParameters: request.parameters,
   };
 

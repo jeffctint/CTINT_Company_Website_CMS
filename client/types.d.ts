@@ -152,3 +152,7 @@ export interface UpdateStatus {
   pkey: string;
   status: string;
 }
+
+export interface UploadImageProps {
+  imagesList: FileWithPath[];
+}
