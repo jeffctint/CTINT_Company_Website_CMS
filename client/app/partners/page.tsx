@@ -19,7 +19,8 @@ import { UploadImageProps } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { partnersKeys } from "@/features/queries";
-import { getPartnerLogo, uploadLogo } from "@/features/partners/api";
+import { getPartnerLogo, updateLogo, uploadLogo } from "@/features/partners/api";
+import Loading from "./loading";
 
 const convertToBase64 = (file: any) => {
   return new Promise((resolve, reject) => {
@@ -35,17 +36,26 @@ const convertToBase64 = (file: any) => {
 };
 
 
-
 const Partners = () => {
   const openRef = useRef<() => void>(null);
   const router = useRouter();
 
-  const [files, setFiles] = useState<any>([]); //upload images
+  const [files, setFiles] = useState<FileWithPath[]>([]); //upload images
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const queryClient = useQueryClient();
 
   const createUploadLogoMutation = useMutation({
     mutationFn: uploadLogo,
+    onSuccess: (res) => {
+      queryClient.invalidateQueries(partnersKeys.list());
+      if (res.errMsg === "" && res.isSuccess) {
+        router.push("/partners");
+      }
+    },
+  });
+
+  const updateLogoMutation = useMutation({
+    mutationFn: updateLogo,
     onSuccess: (res) => {
       queryClient.invalidateQueries(partnersKeys.list());
       if (res.errMsg === "" && res.isSuccess) {
@@ -61,9 +71,11 @@ const Partners = () => {
   });
 
 
-  const logos = partnerLogoQuery?.data
-
+  const logos = partnerLogoQuery?.data?.data
+  const currentImageLists = partnerLogoQuery?.data?.currentImageListIds
+  console.log("partnerLogoQuery", partnerLogoQuery)
   console.log('logos', logos)
+
   const handleUpload = (data: any) => {
     setFiles([...files, ...data]);
   };
@@ -72,26 +84,33 @@ const Partners = () => {
     setFiles(files.filter((item: any, i: number) => i !== index));
   };
 
-  // const previews = files?.map((file: any, index: number) => {
-  //   const imageUrl = URL.createObjectURL(file);
+  const previews = files?.map((file: any, index: number) => {
+    if (logos.length === 0) {
+      const imageUrl = URL?.createObjectURL(file);
 
-  //   return (
-  //     <Image
-  //       width={"100%"}
-  //       height={120}
-  //       fit="cover"
-  //       key={index}
-  //       src={imageUrl}
-  //       imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
-  //     />
-  //   );
-  // });
+      return (
+        <Image
+          width={"100%"}
+          height={120}
+          fit="contain"
+          key={index}
+          src={imageUrl}
+          imageProps={{ onLoad: () => URL?.revokeObjectURL(imageUrl) }}
+        />
+      );
+    }
+
+  });
 
   const handleUploadLogo = async () => {
     const customImages = files.map(async (image: any, i: number) => {
+      console.log("image", image)
       const resultString = await convertToBase64(image);
 
       return {
+        ...image,
+        path: image.path,
+        name: image.name,
         imageString: resultString,
         position: i
       };
@@ -104,6 +123,40 @@ const Partners = () => {
     try {
       console.log(body)
       createUploadLogoMutation.mutate(body)
+    } catch (err: any) {
+      console.error(err)
+    }
+  }
+
+  const handleUpdateLogo = async () => {
+    const customImages = files.map(async (image: any, i: number) => {
+      if (!image.imageString) {
+        const resultString = await convertToBase64(image);
+
+        return {
+          path: image.path,
+          name: image.name,
+          imageString: resultString,
+          position: i
+        };
+      }
+      return {
+        path: image.filePath,
+        name: image.originalFileName,
+        imageString: image.imageString,
+        imageKey: image.imageKey,
+        position: i
+      };
+    });
+
+    const body = {
+      imagesList: await Promise.all(customImages),
+      oldImageListId: currentImageLists
+    }
+
+    try {
+      console.log('partner', body)
+      updateLogoMutation.mutate(body)
     } catch (err: any) {
       console.error(err)
     }
@@ -128,8 +181,8 @@ const Partners = () => {
       return (
         <Image
           width={"100%"}
-          height={80}
-          fit="cover"
+          height={120}
+          fit="contain"
           key={index}
           src={imageUrl}
           imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
@@ -144,8 +197,8 @@ const Partners = () => {
     return (
       <Image
         width={"100%"}
-        height={80}
-        fit="cover"
+        height={120}
+        fit="contain"
         key={index}
         src={imageUrl}
         imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
@@ -153,10 +206,16 @@ const Partners = () => {
     );
   });
 
+
+
   useEffect(() => {
     setFiles(logos)
 
   }, [logos])
+
+  if (partnerLogoQuery.isFetching) {
+    return <Loading />
+  }
 
   console.log("files", files)
   return (
@@ -167,7 +226,7 @@ const Partners = () => {
           <Separator orientation="vertical" />
         </div>
         <div className="w-1/2 flex flex-col justify-start p-4 min-h-[300px]">
-          <div>
+          <div className="flex flex-col space-y-8">
             <Dropzone
               openRef={openRef}
               onDrop={handleUpload}
@@ -200,45 +259,59 @@ const Partners = () => {
                 </Text>
               </div>
             </Dropzone>
-            <SimpleGrid
-              cols={4}
-              breakpoints={[{ maxWidth: "sm", cols: 1 }]}
-              mt={fetchedPreviews?.length > 0 ? "xl" : 0}
-            >
+            {logos?.length === 0 ?
+              <SimpleGrid
+                cols={4}
+                breakpoints={[{ maxWidth: "sm", cols: 1 }]}
+                mt={fetchedPreviews?.length > 0 ? "xl" : 0}>
+                {previews?.map((img: any, i: number) => (
+                  <div key={i} className="w-full relative">
+                    <span
+                      onClick={() => removeImages(i)}
+                      className="absolute right-1 top-1 flex items-center justify-center w-6 h-6 rounded-full hover:bg-[#a9b3c6] z-10 cursor-pointer"
+                    >
+                      <RiDeleteBinLine className="text-[#ffffff] w-4 h-4" />
+                    </span>
+                    {img}
+                  </div>
+                ))}
+              </SimpleGrid>
+              :
+              <SimpleGrid
+                cols={4}
+                breakpoints={[{ maxWidth: "sm", cols: 1 }]}
+                mt={fetchedPreviews?.length > 0 ? "xl" : 0}
+              >
+                {fetchedPreviews?.map((img: any, i: number) => (
+                  <div key={i} className="w-full relative">
+                    <span
+                      onClick={() => removeImages(i)}
+                      className="absolute right-1 top-1 flex items-center justify-center w-6 h-6 rounded-full hover:bg-[#a9b3c6] z-10 cursor-pointer"
+                    >
+                      <RiDeleteBinLine className="text-[#ffffff] w-4 h-4" />
+                    </span>
+                    {img}
+                  </div>
+                ))}
 
-              {fetchedPreviews?.map((img: any, i: number) => (
-                <div key={i} className="w-full relative">
-                  <span
-                    onClick={() => removeImages(i)}
-                    className="absolute right-0 top-1 flex items-center justify-center w-6 h-6 rounded-full  hover:bg-[#a9b3c6] z-10 cursor-pointer"
-                  >
-                    <RiDeleteBinLine className="text-[#ffffff]" />
-                  </span>
-                  {img}
-                </div>
-              ))}
-
-              {/* {previews.map((img: any, i: number) => (
-                <div key={i} className="w-full relative">
-                  <span
-                    onClick={() => removeImages(i)}
-                    className="absolute right-1 top-1 flex items-center justify-center w-6 h-6 rounded-full hover:bg-[#a9b3c6] z-10 cursor-pointer"
-                  >
-                    <RiDeleteBinLine className="text-[#ffffff] w-4 h-4" />
-                  </span>
-                  {img}
-                </div>
-              ))} */}
-            </SimpleGrid>
+              </SimpleGrid>
+            }
           </div>
-          <Button
+          {logos?.length === 0 ? <Button
             onClick={handleUploadLogo}
             disabled={isLoading}
             type="button"
             className={`w-full ${files?.length > 0 ? "block" : "hidden"} flex-1 bg-[#97f64d] text-[#181f25] hover:bg-[#97f64d] my-10 transition`}
           >
             {isLoading ? "Loading" : "Upload"}
-          </Button>
+          </Button> : <Button
+            onClick={handleUpdateLogo}
+            disabled={isLoading}
+            type="button"
+            className={`w-full flex-1 bg-[#97f64d] text-[#181f25] hover:bg-[#97f64d] my-10 transition`}
+          >
+            {isLoading ? "Loading" : "Update"}
+          </Button>}
         </div>
       </div>
 
