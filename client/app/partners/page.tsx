@@ -155,7 +155,6 @@ const Partners = () => {
     }
 
     try {
-      console.log('partner', body)
       updateLogoMutation.mutate(body)
     } catch (err: any) {
       console.error(err)

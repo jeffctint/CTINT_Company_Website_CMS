@@ -156,3 +156,15 @@ export interface UpdateStatus {
 export interface UploadImageProps {
   imagesList: FileWithPath[];
 }
+
+export interface PartnersLogo {
+  createDatetime: string;
+  createUserPkey: string;
+  filePath: string;
+  imageKey: string;
+  imageString: string;
+  originalFileName: string;
+  position: number;
+  referenceCode: string;
+  referenceType: string;
+}
