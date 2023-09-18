@@ -50,13 +50,14 @@ const Newsrooms = () => {
     fetchStatus.mutate({ pkey, status });
   };
 
+  if (newsListQuery.isFetching) {
+    return <Loading />
+  }
+
   if (!list) {
     return null;
   }
 
-  if (newsListQuery.isFetching) {
-    return <Loading />
-  }
 
   return (
     <div className="flex flex-col text-white text-2xl overflow-y-auto">

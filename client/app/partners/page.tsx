@@ -216,7 +216,7 @@ const Partners = () => {
     return <Loading />
   }
 
-  console.log("files", files)
+
   return (
     <div className="flex justify-center  text-white text-2xl p-4">
       <div className="flex flex-row w-full max-h-fit">
