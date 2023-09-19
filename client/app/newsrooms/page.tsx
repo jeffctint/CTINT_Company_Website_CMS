@@ -31,6 +31,7 @@ const Newsrooms = () => {
   const newsListQuery = useQuery({
     queryKey: newsKeys.list(status, '0'),
     queryFn: async () => await getNewsList(status, '0'),
+    cacheTime: 1000 * 60 * 10
   });
 
   const list = newsListQuery.data?.newsContent;

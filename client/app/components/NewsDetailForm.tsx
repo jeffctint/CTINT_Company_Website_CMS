@@ -48,19 +48,6 @@ import {
 } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 
-// const convertToBase64 = (file: any) => {
-//   return new Promise((resolve, reject) => {
-//     const fileReader = new FileReader();
-//     fileReader.readAsDataURL(file);
-//     fileReader.onload = () => {
-//       resolve(fileReader.result);
-//     };
-//     fileReader.onerror = (error) => {
-//       reject(error);
-//     };
-//   });
-// };
-
 const NewsDetailForm = ({
   handleSubmit,
   onFinishHandler,
@@ -578,9 +565,8 @@ const NewsDetailForm = ({
             maxSize={10 * 1024 ** 2}
             multiple={true}
             disabled={!isEdit}
-            className={`${
-              isEdit ? `` : `bg-[#a9b3c6] cursor-not-allowed hover:bg-[#a9b3c6]`
-            }`}
+            className={`${isEdit ? `` : `bg-[#a9b3c6] cursor-not-allowed hover:bg-[#a9b3c6]`
+              }`}
           >
             <div style={{ pointerEvents: "none" }}>
               <Group position="center">

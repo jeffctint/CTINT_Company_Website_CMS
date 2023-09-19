@@ -13,15 +13,17 @@ const CustomImage = async ({ newsId, newsTitle, imagePath }: any) => {
   const image = newsDetailQuery?.data?.data?.images[0]?.imageString;
   // newsDetailQuery.isFetched;
   return (
-    <div>
+    <div className=" h-40">
       {newsDetailQuery.isFetched ? (
         <Image
-          width={380}
-          height={163}
+          width={0}
+          height={0}
+          style={{ width: '100%', height: '100%' }}
+          sizes='100vw'
           src={image}
           alt={newsTitle}
           loading="lazy"
-          className="h-40"
+          className="w-[380px] object-fit"
         />
       ) : (
         <Skeleton className="w-full h-full" />

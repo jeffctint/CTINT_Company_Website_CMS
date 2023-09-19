@@ -247,6 +247,11 @@ const NewsDetail = ({ params: { pkey } }: DetailPkeyProps) => {
     setFiles(files.filter((item, i) => i !== index));
   };
 
+  if (newsDetailQuery.isFetching) {
+    return <Loading />
+
+  }
+
   if (updateNewsMutation.isLoading) {
     return <Loading />
   }
